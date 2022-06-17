@@ -727,19 +727,20 @@ public class WelcomeScreenActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = new User(firebaseUser.getUid(), lastName, firstName);
 
-                Roles roles = snapshot.getValue(Roles.class);
+                Roles allRoles = snapshot.getValue(Roles.class);
                 Map<String, String> mapRole = new HashMap<>();
 
-                if (roles != null)
-                    for (Map.Entry<String, Map<String, Role>> rolesInCategory : roles.getRoles().entrySet())
-                        for (Map.Entry<String, Role> role : rolesInCategory.getValue().entrySet())
-                            if (role.getValue().isDefaultOnRegister()) {
-                                String roleIndex = "role" + ((String.valueOf(mapRole.size() + 1).length() < 2)
-                                        ? "0" + (mapRole.size() + 1)
-                                        : (int) (mapRole.size() + 1));
+                if (allRoles != null && allRoles.getRoles() != null)
+                    for (Map.Entry<String, Map<String, Role>> rolesInCategory : allRoles.getRoles().entrySet())
+                        if (rolesInCategory.getValue() != null)
+                            for (Map.Entry<String, Role> roleInCategory : rolesInCategory.getValue().entrySet())
+                                if (roleInCategory.getValue().isDefaultOnRegister()) {
+                                    String roleIndex = "role" + ((String.valueOf(mapRole.size() + 1).length() < 2)
+                                            ? "0" + (mapRole.size() + 1)
+                                            : (int) (mapRole.size() + 1));
 
-                                mapRole.put(roleIndex, role.getKey());
-                            }
+                                    mapRole.put(roleIndex, roleInCategory.getKey());
+                                }
 
                 user.setRoles(mapRole);
 

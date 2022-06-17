@@ -52,7 +52,6 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
     List<CheckOutProduct> checkOutProducts = new ArrayList<>();
 
     boolean isAllSelected = false;
-    int selectedCartProductCount = 0;
 
     public CartProductAdapter(Context context, List<CartProduct> cartProducts,
             List<Product> products, String productId) {
@@ -173,13 +172,10 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
         checkBox.setOnCheckedChangeListener((compoundButton, b) -> {
             quantity = Integer.parseInt(tvQty.getText().toString());
 
-            if (b) {
+            if (b)
                 addProductToCheckOut(new CheckOutProduct(product.getId(), quantity, quantity * product.getPrice()));
-                selectedCartProductCount++;
-            } else {
+            else
                 removeProductFromCheckOut(product.getId());
-                selectedCartProductCount--;
-            }
 
             adapterListener.updateCheckOutInfo(checkOutProducts);
         });
@@ -254,6 +250,10 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
 
     public List<CheckOutProduct> getCheckOutProducts() {
         return checkOutProducts;
+    }
+
+    public void setCheckOutProducts(List<CheckOutProduct> checkOutProducts) {
+        this.checkOutProducts = checkOutProducts;
     }
 
     AdapterListener adapterListener;

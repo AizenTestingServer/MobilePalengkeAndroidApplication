@@ -160,8 +160,10 @@ public class AddressDialog {
                 return;
             }
 
+            Address address = new Address(addressId, null, label, value);
+
             if (dialogListener != null)
-                dialogListener.onConfirm(addressId, label, value);
+                dialogListener.onConfirm(address);
         });
 
         btnCancel.setOnClickListener(view -> dismissDialog());
@@ -200,7 +202,7 @@ public class AddressDialog {
     }
 
     public void setData(Address address) {
-        this.addressId = address.getId();
+        addressId = address.getId();
 
         etLabel.setText(address.getName());
         etAddress.setText(address.getValue());
@@ -211,7 +213,7 @@ public class AddressDialog {
     DialogListener dialogListener;
 
     public interface DialogListener {
-        void onConfirm(String addressId, String label, String value);
+        void onConfirm(Address address);
     }
 
     public void setDialogListener(DialogListener dialogListener) {

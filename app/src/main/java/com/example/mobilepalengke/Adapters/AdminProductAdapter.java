@@ -35,21 +35,22 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
     @NonNull
     @Override
     public AdminProductAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.custom_meal_plan_category_layout, parent, false);
+        View view = layoutInflater.inflate(R.layout.custom_admin_product_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull AdminProductAdapter.ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
-        ImageView imgMealPlan = holder.imgMealPlan;
-        TextView tvLabel = holder.tvLabel;
+        ImageView imgProduct = holder.imgProduct;
+        TextView tvLabel = holder.tvLabel, tvPrice = holder.tvPrice;
 
         Product product = products.get(position);
 
         tvLabel.setText(product.getName());
+        tvPrice.setText(context.getString(R.string.priceValue, product.getPrice()));
         Picasso.get().load(product.getImg()).placeholder(R.drawable.ic_image_blue)
-                .error(R.drawable.ic_broken_image_red).into(imgMealPlan);
+                .error(R.drawable.ic_broken_image_red).into(imgProduct);
 
         backgroundLayout.setOnClickListener(view -> {
             if (productAdapterListener != null) productAdapterListener.onClick(product);
@@ -63,15 +64,16 @@ public class AdminProductAdapter extends RecyclerView.Adapter<AdminProductAdapte
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
-        ImageView imgMealPlan;
-        TextView tvLabel;
+        ImageView imgProduct;
+        TextView tvLabel, tvPrice;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
-            imgMealPlan = itemView.findViewById(R.id.imgMealPlan);
+            imgProduct = itemView.findViewById(R.id.imgProduct);
             tvLabel = itemView.findViewById(R.id.tvLabel);
+            tvPrice = itemView.findViewById(R.id.tvPrice);
         }
     }
 

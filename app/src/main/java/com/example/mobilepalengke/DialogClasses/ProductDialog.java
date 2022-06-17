@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.R;
 
+import java.util.Map;
+
 import androidx.core.content.ContextCompat;
 
 public class ProductDialog {
@@ -23,7 +25,9 @@ public class ProductDialog {
     EditText etName, etImageLink, etPrice;
     Button btnConfirm, btnCancel;
 
-    String name, value, productId;
+    String productId, name, img;
+    double price = 0;
+    Map<String, String> categories, descriptions;
 
     Context context;
     Activity activity;
@@ -88,41 +92,88 @@ public class ProductDialog {
                             ContextCompat.getDrawable(context, R.drawable.ic_label_red),
                             null, null, null);
 
-                    tvErrorCaption.setText(context.getString(R.string.invalidLabel));
+                    tvErrorCaption.setText(context.getString(R.string.invalidProductName));
+                    tvErrorCaption.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        etImageLink.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                img = editable.toString();
+            }
+        });
+
+        etPrice.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                price = editable.toString().length() > 0 ? Double.parseDouble(editable.toString()) : 0;
+
+                if (price >= 10) {
+                    etPrice.setBackgroundResource(R.drawable.et_bg_default);
+                    etPrice.setCompoundDrawablesWithIntrinsicBounds(
+                            ContextCompat.getDrawable(context, R.drawable.ic_price_change_focused),
+                            null, null, null);
+
+                    tvErrorCaption.setVisibility(View.GONE);
+                } else {
+                    etPrice.setBackgroundResource(R.drawable.et_bg_error);
+                    etPrice.setCompoundDrawablesWithIntrinsicBounds(
+                            ContextCompat.getDrawable(context, R.drawable.ic_price_change_red),
+                            null, null, null);
+
+                    tvErrorCaption.setText(context.getString(R.string.invalidPrice));
                     tvErrorCaption.setVisibility(View.VISIBLE);
                 }
             }
         });
 
         btnConfirm.setOnClickListener(view -> {
-            boolean isInvalidLabel = name == null ||
-                    name.trim().length() < 2 || name.trim().length() > 16;
-            boolean isInvalidAddress = value == null || value.trim().length() < 2;
+            boolean isInvalidProductName = name == null || name.trim().length() < 2;
+            boolean isInvalidPrice = price == 0 || price < 10;
 
-            if (isInvalidLabel) {
+            if (isInvalidProductName) {
                 etName.setBackgroundResource(R.drawable.et_bg_error);
                 etName.setCompoundDrawablesWithIntrinsicBounds(
                         ContextCompat.getDrawable(context, R.drawable.ic_label_red),
                         null, null, null);
             }
-            if (isInvalidAddress) {
-                etImageLink.setBackgroundResource(R.drawable.et_bg_error);
-                etImageLink.setCompoundDrawablesWithIntrinsicBounds(
-                        ContextCompat.getDrawable(context, R.drawable.ic_share_location_red),
-                        null, null, null);
-            }
 
-            if (isInvalidLabel || isInvalidAddress) {
-                if (isInvalidLabel)
-                    tvErrorCaption.setText(context.getString(R.string.invalidLabel));
-                if (isInvalidAddress)
-                    tvErrorCaption.setText(context.getString(R.string.invalidAddress));
+            if (isInvalidProductName || isInvalidPrice) {
+                if (isInvalidProductName)
+                    tvErrorCaption.setText(context.getString(R.string.invalidProductName));
+                if (isInvalidPrice)
+                    tvErrorCaption.setText(context.getString(R.string.invalidPrice));
+
                 tvErrorCaption.setVisibility(View.VISIBLE);
                 return;
             }
 
+            Product product = new Product(productId, name, img, categories, descriptions, price);
+
             if (dialogListener != null)
-                dialogListener.onConfirm(productId, name, value);
+                dialogListener.onConfirm(product);
         });
 
         btnCancel.setOnClickListener(view -> dismissDialog());
@@ -140,6 +191,7 @@ public class ProductDialog {
 
         etName.getText().clear();
         etImageLink.getText().clear();
+        etPrice.getText().clear();
 
         etName.setBackgroundResource(R.drawable.et_bg_default);
         etName.setCompoundDrawablesWithIntrinsicBounds(
@@ -148,12 +200,20 @@ public class ProductDialog {
 
         etImageLink.setBackgroundResource(R.drawable.et_bg_default);
         etImageLink.setCompoundDrawablesWithIntrinsicBounds(
-                ContextCompat.getDrawable(context, R.drawable.ic_share_location_focused),
+                ContextCompat.getDrawable(context, R.drawable.ic_link_focused),
                 null, null, null);
+
+        etPrice.setBackgroundResource(R.drawable.et_bg_default);
+        etPrice.setCompoundDrawablesWithIntrinsicBounds(
+                ContextCompat.getDrawable(context, R.drawable.ic_price_change_focused),
+                null, null, null);
+
+        categories = null;
+        descriptions = null;
 
         tvErrorCaption.setVisibility(View.GONE);
 
-        textView.setText(context.getString(R.string.addAddress));
+        textView.setText(context.getString(R.string.addProduct));
     }
 
     public void dismissDialog() {
@@ -161,11 +221,20 @@ public class ProductDialog {
     }
 
     public void setData(Product product) {
-        this.productId = product.getId();
+        productId = product.getId();
 
         etName.setText(product.getName());
         etImageLink.setText(product.getImg());
         etPrice.setText(String.valueOf(product.getPrice()));
+        tvDescriptions.setText(context.getString(R.string.qtyProductDescriptionValue,
+                product.getDescriptions().size(),
+                product.getDescriptions().size() > 1 ? "s" : ""));
+        tvCategories.setText(context.getString(R.string.qtyProductCategoriesValue,
+                product.getCategories().size(),
+                product.getCategories().size() > 1 ? "ies" : "y"));
+
+        categories = product.getCategories();
+        descriptions = product.getDescriptions();
 
         textView.setText(context.getString(R.string.updateProduct));
     }
@@ -173,7 +242,7 @@ public class ProductDialog {
     DialogListener dialogListener;
 
     public interface DialogListener {
-        void onConfirm(String productId, String name, String value);
+        void onConfirm(Product product);
     }
 
     public void setDialogListener(DialogListener dialogListener) {

@@ -18,21 +18,6 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/cartIconImage"
-            android:layout_width="40dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/app_name"
-            android:padding="4dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_baseline_shopping_cart_24"
-            app:tint="@color/mp_blue"
-            tools:ignore="ImageContrastCheck" />
-
-        <ImageView
             android:id="@+id/imgAppIcon"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
@@ -49,23 +34,6 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvCartCount"
-            android:layout_width="28dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_notification_counter"
-            android:gravity="center_horizontal|center_vertical"
-            android:padding="4dp"
-            android:text="@string/notificationCountValue"
-            android:textColor="@color/mp_black_regular"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/cartIconImage"
-            app:layout_constraintEnd_toEndOf="@+id/cartIconImage"
-            app:layout_constraintStart_toEndOf="@+id/cartIconImage"
-            app:layout_constraintTop_toTopOf="@+id/cartIconImage"
-            tools:ignore="TextContrastCheck" />
-
-        <TextView
             android:id="@+id/appNavTextView"
             style="@style/TVFontStyle1"
             android:layout_width="0dp"
@@ -74,7 +42,7 @@
             android:layout_marginEnd="16dp"
             android:text="@string/mealPlans"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cartIconImage"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imgAppIcon"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -89,6 +57,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/headerLayout">
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/buttonLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <Button
+                android:id="@+id/btnAddMealPlan"
+                style="@style/MaterialBtnStyle.Button1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/addMealPlan"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
         <TextView
             android:id="@+id/tvMealPlanCaption"
             style="@style/TVFontStyle4"
@@ -101,7 +94,7 @@
             android:text="@string/defaultRecordCaption"
             android:textAlignment="center"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerLayout2" />
@@ -171,7 +164,7 @@
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerLayout2" />
@@ -223,7 +216,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/buttonLayout"
+            android:id="@+id/buttonLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
@@ -252,7 +245,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/mp_white_accent"
-            app:layout_constraintBottom_toTopOf="@+id/buttonLayout"
+            app:layout_constraintBottom_toTopOf="@+id/buttonLayout2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/headerLayout3">

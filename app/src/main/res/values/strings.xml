@@ -165,7 +165,7 @@
     <string name="updateAddress">Update Address</string>
     <string name="enterAddress">Please enter your address</string>
     <string name="invalidLabel">Label must be between 2 and 16 characters.</string>
-    <string name="invalidAddress">Address must at least 2 characters</string>
+    <string name="invalidAddress">Address must at least 2 characters.</string>
 
     <string name="cart">Cart</string>
     <string name="selectAll">Select All</string>
@@ -195,6 +195,13 @@
     <string name="orders">Orders</string>
     <string name="users">Users</string>
 
+    <string name="addMealPlan">Add Meal Plan</string>
+
+    <string name="searchRole">Search Role</string>
+    <string name="role">Role</string>
+    <string name="roleType">Role Type</string>
+    <string name="addRole">Add Role</string>
+
     <string name="countText">0</string>
     <string name="countValue">%d</string>
 
@@ -206,6 +213,8 @@
     <string name="qtyProductCategoriesText">1 Category</string>
     <string name="qtyProductDescriptionValue">%d Description%s</string>
     <string name="qtyProductCategoriesValue">%d Categor%s</string>
+    <string name="invalidProductName">Product Name must be at least 2.</string>
+    <string name="invalidPrice">Price must at least 10 in peso.</string>
 
     <string name="insertDetailsNote">Insert Details Here</string>
 

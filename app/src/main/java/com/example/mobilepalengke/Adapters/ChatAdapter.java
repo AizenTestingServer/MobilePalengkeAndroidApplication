@@ -81,14 +81,16 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.ViewHolder> {
         tvLatestMessage.setTextAppearance(R.style.TVFontStyle11);
         tvTimestamp.setTextAppearance(R.style.TVFontStyle11);
 
-        for (Map.Entry<String, Boolean> mapIsRead : chat.getIsRead().entrySet())
-            if (mapIsRead.getKey().equals(uid) && !mapIsRead.getValue()) {
-                imgAlert.setVisibility(View.VISIBLE);
-                tvRoles.setTextAppearance(R.style.TVFontStyle12);
-                tvLatestMessage.setTextAppearance(R.style.TVFontStyle3);
-                tvTimestamp.setTextAppearance(R.style.TVFontStyle12);
-                break;
-            }
+        if (chat.getIsRead() != null) {
+            for (Map.Entry<String, Boolean> mapIsRead : chat.getIsRead().entrySet())
+                if (mapIsRead.getKey().equals(uid) && !mapIsRead.getValue()) {
+                    imgAlert.setVisibility(View.VISIBLE);
+                    tvRoles.setTextAppearance(R.style.TVFontStyle12);
+                    tvLatestMessage.setTextAppearance(R.style.TVFontStyle3);
+                    tvTimestamp.setTextAppearance(R.style.TVFontStyle12);
+                    break;
+                }
+        }
 
         int top = dpToPx(4), bottom = dpToPx(4);
 

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Activities.MealPlanDetailsActivity">
 
     <ScrollView
@@ -46,23 +47,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/tvCartCount"
-            android:layout_width="28dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_notification_counter"
-            android:gravity="center_horizontal|center_vertical"
-            android:padding="4dp"
-            android:text="@string/notificationCountValue"
-            android:textColor="@color/mp_black_regular"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/cartIconImage"
-            app:layout_constraintEnd_toEndOf="@+id/cartIconImage"
-            app:layout_constraintStart_toEndOf="@+id/cartIconImage"
-            app:layout_constraintTop_toTopOf="@+id/cartIconImage"
-            tools:ignore="TextContrastCheck" />
-
         <ImageView
             android:id="@+id/cartIconImage"
             android:layout_width="40dp"
@@ -93,6 +77,23 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvCartCount"
+            android:layout_width="28dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_notification_counter"
+            android:gravity="center_horizontal|center_vertical"
+            android:padding="4dp"
+            android:text="@string/notificationCountValue"
+            android:textColor="@color/mp_black_regular"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/cartIconImage"
+            app:layout_constraintEnd_toEndOf="@+id/cartIconImage"
+            app:layout_constraintStart_toEndOf="@+id/cartIconImage"
+            app:layout_constraintTop_toTopOf="@+id/cartIconImage"
+            tools:ignore="TextContrastCheck" />
 
         <TextView
             android:id="@+id/appNavTextView"

@@ -192,7 +192,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         Product product = dataSnapshot.getValue(Product.class);
-                        if (product != null)
+                        if (product != null && product.getCategories() != null)
                             for (Map.Entry<String, String> mapProductCategories : product.getCategories().entrySet())
                                 if (currentProduct != null && !currentProduct.getId().equals(product.getId()) &&
                                         currentProduct.getCategories().containsValue(mapProductCategories.getValue())) {
@@ -209,8 +209,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
                             .error(R.drawable.ic_broken_image_red).into(imgProduct);
 
                     String description = "";
-                    for (Map.Entry<String, String> mapDescription : currentProduct.getDescriptions().entrySet())
-                        description += "• " + mapDescription.getValue() + "\n";
+                    if (currentProduct.getDescriptions() != null)
+                        for (Map.Entry<String, String> mapDescription : currentProduct.getDescriptions().entrySet())
+                            description += "• " + mapDescription.getValue() + "\n";
 
                     if (description.trim().length() > 0)
                         tvDescription.setVisibility(View.VISIBLE);
@@ -256,7 +257,9 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 if (isListening) {
                     productCategories.clear();
 
-                    List<String> categoryIds = new ArrayList<>(currentProduct.getCategories().values());
+                    List<String> categoryIds = currentProduct.getCategories() != null ?
+                            new ArrayList<>(currentProduct.getCategories().values()) :
+                            new ArrayList<>();
 
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {

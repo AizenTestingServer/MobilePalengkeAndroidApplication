@@ -3,7 +3,7 @@ package com.example.mobilepalengke.DataClasses;
 public class Role {
 
     private String id, name;
-    int level;
+    private int level;
     private boolean deactivated, defaultOnRegister, fixed;
 
     public Role() {

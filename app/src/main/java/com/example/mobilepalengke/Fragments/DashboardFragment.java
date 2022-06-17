@@ -10,7 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.mobilepalengke.Activities.AdminMealPlansActivity;
+import com.example.mobilepalengke.Activities.AdminOrderActivity;
 import com.example.mobilepalengke.Activities.AdminProductActivity;
+import com.example.mobilepalengke.Activities.AdminRolesActivity;
+import com.example.mobilepalengke.Activities.AdminUsersActivity;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.R;
@@ -67,8 +71,28 @@ public class DashboardFragment extends Fragment {
         isListening = true;
         firebaseDatabase.getReference().addValueEventListener(getGeneralReference());
 
+        rolesCardView.setOnClickListener(view1 -> {
+            Intent intent = new Intent(context, AdminRolesActivity.class);
+            startActivity(intent);
+        });
+
+        usersCardView.setOnClickListener(view1 -> {
+            Intent intent = new Intent(context, AdminUsersActivity.class);
+            startActivity(intent);
+        });
+
+        mealPlansCardView.setOnClickListener(view1 -> {
+            Intent intent = new Intent(context, AdminMealPlansActivity.class);
+            startActivity(intent);
+        });
+
         productsCardView.setOnClickListener(view1 -> {
             Intent intent = new Intent(context, AdminProductActivity.class);
+            startActivity(intent);
+        });
+
+        ordersCardView.setOnClickListener(view1 -> {
+            Intent intent = new Intent(context, AdminOrderActivity.class);
             startActivity(intent);
         });
 
@@ -82,6 +106,7 @@ public class DashboardFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
                     if (snapshot.exists()) {
+                        orderCount = (int) snapshot.child("orders").getChildrenCount();
                         productCount = (int) snapshot.child("products").getChildrenCount();
                         mealPlanCount = (int) snapshot.child("mealPlans").getChildrenCount();
                         userCount = (int) snapshot.child("users").getChildrenCount();
@@ -91,6 +116,7 @@ public class DashboardFragment extends Fragment {
                             roleCount += dataSnapshot.getChildrenCount();
                     }
 
+                    tvCount.setText(String.valueOf(orderCount));
                     tvCount2.setText(String.valueOf(productCount));
                     tvCount3.setText(String.valueOf(mealPlanCount));
                     tvCount4.setText(String.valueOf(userCount));
@@ -110,5 +136,27 @@ public class DashboardFragment extends Fragment {
                 messageDialog.showDialog();
             }
         };
+    }
+
+    @Override
+    public void onResume() {
+        isListening = true;
+        firebaseDatabase.getReference().addValueEventListener(getGeneralReference());
+
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        isListening = false;
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        isListening = false;
+
+        super.onDestroy();
     }
 }

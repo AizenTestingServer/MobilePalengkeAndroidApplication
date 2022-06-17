@@ -11,15 +11,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.mobilepalengke.Adapters.AdminProductAdapter;
 import com.example.mobilepalengke.Adapters.IconOptionAdapter;
+import com.example.mobilepalengke.Adapters.MealPlanAdapter;
 import com.example.mobilepalengke.DataClasses.IconOption;
-import com.example.mobilepalengke.DataClasses.Product;
+import com.example.mobilepalengke.DataClasses.MealPlan;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
-import com.example.mobilepalengke.DialogClasses.ProductDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -39,19 +37,18 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class AdminProductActivity extends AppCompatActivity {
+public class AdminMealPlansActivity extends AppCompatActivity {
 
-    ConstraintLayout productsLayout, productCategoriesLayout;
-    EditText etSearchProduct;
-    TextView tvSelectedCategory, btnChangeCategory, tvProductCaption;
-    Button btnAddProduct, btnBack;
+    ConstraintLayout mealPlansLayout, mealPlanCategoriesLayout;
+    EditText etSearchMealPlan;
+    TextView tvSelectedCategory, btnChangeCategory, tvMealPlanCaption;
+    Button btnBack;
     RecyclerView recyclerView, recyclerView2;
 
     Context context;
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
-    ProductDialog productDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
@@ -62,19 +59,19 @@ public class AdminProductActivity extends AppCompatActivity {
 
     String searchValue;
 
-    Query productsQuery, productCategoriesQuery;
+    Query mealPlansQuery, mealPlanCategoriesQuery;
 
-    List<Product> products = new ArrayList<>(), productsCopy = new ArrayList<>();
-    List<String> productsCategories = new ArrayList<>(), productsCategoriesCopy = new ArrayList<>();
+    List<MealPlan> mealPlans = new ArrayList<>(), mealPlansCopy = new ArrayList<>();
+    List<String> mealPlansCategories = new ArrayList<>(), mealPlanCategoriesCopy = new ArrayList<>();
 
-    AdminProductAdapter adminProductAdapter;
+    MealPlanAdapter mealPlanAdapter;
 
     IconOptionAdapter iconOptionAdapter;
 
-    List<IconOption> productCategories = new ArrayList<>();
+    List<IconOption> mealPlanCategories = new ArrayList<>();
     List<String> productCategoriesId = new ArrayList<>();
 
-    int selectedCategoryIndex = 0, overallProductCount = 0;
+    int selectedCategoryIndex = 0;
     String selectedCategoryId;
 
     String uid;
@@ -82,50 +79,46 @@ public class AdminProductActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_product);
+        setContentView(R.layout.activity_admin_meal_plans);
 
-        productsLayout = findViewById(R.id.productsLayout);
-        productCategoriesLayout = findViewById(R.id.productCategoriesLayout);
+        mealPlansLayout = findViewById(R.id.mealPlansLayout);
+        mealPlanCategoriesLayout = findViewById(R.id.mealPlanCategoriesLayout);
 
-        etSearchProduct = findViewById(R.id.etSearchProduct);
+        etSearchMealPlan = findViewById(R.id.etSearchMealPlan);
         tvSelectedCategory = findViewById(R.id.tvSelectedCategory);
         btnChangeCategory = findViewById(R.id.btnChangeCategory);
         recyclerView = findViewById(R.id.recyclerView);
-        btnAddProduct = findViewById(R.id.btnAddProduct);
-        tvProductCaption = findViewById(R.id.tvProductCaption);
+        tvMealPlanCaption = findViewById(R.id.tvMealPlanCaption);
 
         recyclerView2 = findViewById(R.id.recyclerView2);
         btnBack = findViewById(R.id.btnBack);
 
-        context = AdminProductActivity.this;
+        context = AdminMealPlansActivity.this;
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
-        productDialog = new ProductDialog(context);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
         if (firebaseUser != null)
             uid = firebaseUser.getUid();
 
+        selectedCategoryId = getIntent().getStringExtra("selectedCategoryId");
+
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        productsQuery = firebaseDatabase.getReference("products").orderByChild("id");
-        productCategoriesQuery = firebaseDatabase.getReference("productCategories").orderByChild("name");
+        mealPlansQuery = firebaseDatabase.getReference("mealPlans").orderByChild("id");
+        mealPlanCategoriesQuery = firebaseDatabase.getReference("mealPlanCategories").orderByChild("name");
 
         loadingDialog.showDialog();
         isListening = true;
-        productsQuery.addValueEventListener(getProdValueListener());
+        mealPlansQuery.addValueEventListener(getProdValueListener());
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
-        adminProductAdapter = new AdminProductAdapter(context, products);
-        adminProductAdapter.setProductAdapterListener(product -> {
-            productDialog.showDialog();
-            productDialog.setData(product);
-        });
+        mealPlanAdapter = new MealPlanAdapter(context, mealPlans);
         recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(adminProductAdapter);
+        recyclerView.setAdapter(mealPlanAdapter);
 
-        iconOptionAdapter = new IconOptionAdapter(context, productCategories);
+        iconOptionAdapter = new IconOptionAdapter(context, mealPlanCategories);
         iconOptionAdapter.setIconOptionAdapterListener(new IconOptionAdapter.IconOptionAdapterListener() {
             @Override
             public void onClick(IconOption iconOption) {
@@ -141,8 +134,8 @@ public class AdminProductActivity extends AppCompatActivity {
                 selectedCategoryIndex = position;
                 selectedCategoryId = productCategoriesId.get(position);
 
-                productCategoriesLayout.setVisibility(View.GONE);
-                productsLayout.setVisibility(View.VISIBLE);
+                mealPlanCategoriesLayout.setVisibility(View.GONE);
+                mealPlansLayout.setVisibility(View.VISIBLE);
 
                 filterProducts();
             }
@@ -152,7 +145,7 @@ public class AdminProductActivity extends AppCompatActivity {
         recyclerView2.setLayoutManager(linearLayoutManager2);
         recyclerView2.setAdapter(iconOptionAdapter);
 
-        etSearchProduct.addTextChangedListener(new TextWatcher() {
+        etSearchMealPlan.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -171,64 +164,19 @@ public class AdminProductActivity extends AppCompatActivity {
             }
         });
 
-        btnAddProduct.setOnClickListener(view -> productDialog.showDialog());
-
-        productDialog.setDialogListener((product) -> {
-            loadingDialog.showDialog();
-
-            String productId = product.getId();
-            boolean isAddMode = false;
-
-            if (productId == null) {
-                productId = "prod"
-                        + ((String.valueOf(overallProductCount + 1).length() < 2) ?
-                        "0" + (overallProductCount + 1) :
-                        (int) (overallProductCount + 1));
-                isAddMode = true;
-            }
-
-            String toastMessage = "Successfully " + (isAddMode ? "added" : "updated") + " the product.";
-
-            Product newProduct = new Product(productId, product.getName(), product.getImg(),
-                    product.getCategories(), product.getDescriptions(), product.getPrice());
-
-            firebaseDatabase.getReference("products").child(productId)
-                    .setValue(newProduct).addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            Toast.makeText(
-                                    context,
-                                    toastMessage,
-                                    Toast.LENGTH_SHORT
-                            ).show();
-
-                            productDialog.dismissDialog();
-                        } else {
-                            String error = "";
-                            if (task.getException() != null)
-                                error = task.getException().toString();
-
-                            messageDialog.setTextCaption(error);
-                            messageDialog.setTextType(2);
-                            messageDialog.showDialog();
-                        }
-
-                        loadingDialog.dismissDialog();
-                    });
-        });
-
         btnChangeCategory.setOnClickListener(view1 -> {
             if (currentStep < maxStep)
                 currentStep++;
 
-            productsLayout.setVisibility(View.GONE);
-            productCategoriesLayout.setVisibility(View.VISIBLE);
+            mealPlansLayout.setVisibility(View.GONE);
+            mealPlanCategoriesLayout.setVisibility(View.VISIBLE);
         });
 
         btnBack.setOnClickListener(view1 -> {
             currentStep--;
 
-            productCategoriesLayout.setVisibility(View.GONE);
-            productsLayout.setVisibility(View.VISIBLE);
+            mealPlanCategoriesLayout.setVisibility(View.GONE);
+            mealPlansLayout.setVisibility(View.VISIBLE);
         });
     }
 
@@ -238,59 +186,55 @@ public class AdminProductActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
-                    overallProductCount = 0;
-                    products.clear();
+                    mealPlans.clear();
 
                     if (snapshot.exists()) {
-                        overallProductCount = (int) snapshot.getChildrenCount();
-
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            Product product = dataSnapshot.getValue(Product.class);
-                            if (product != null)
-                                products.add(product);
+                            MealPlan mealPlan = dataSnapshot.getValue(MealPlan.class);
+                            if (mealPlan != null)
+                                mealPlans.add(mealPlan);
                         }
                     }
 
-                    if (products.size() == 0)
-                        tvProductCaption.setVisibility(View.VISIBLE);
-                    else
-                        tvProductCaption.setVisibility(View.GONE);
-                    tvProductCaption.bringToFront();
+                    if (mealPlans.size() == 0)
+                        tvMealPlanCaption.setVisibility(View.VISIBLE);
+                    else tvMealPlanCaption.setVisibility(View.GONE);
+                    tvMealPlanCaption.bringToFront();
 
-                    adminProductAdapter.notifyDataSetChanged();
+                    mealPlanAdapter.notifyDataSetChanged();
                 }
 
-                productCategoriesQuery.addValueEventListener(getProdCatValueListener());
+                mealPlanCategoriesQuery.addValueEventListener(getMealPlanValueListener());
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("TAG: " + context.getClass(), "productsQuery:onCancelled", error.toException());
+                Log.e("TAG: " + context.getClass(), "mealPlansQuery:onCancelled", error.toException());
                 loadingDialog.dismissDialog();
 
-                messageDialog.setTextCaption("Failed to get the products.");
+                messageDialog.setTextCaption("Failed to get the mealPlans.");
                 messageDialog.setTextType(2);
                 messageDialog.showDialog();
             }
         };
     }
 
-    private ValueEventListener getProdCatValueListener() {
+    private ValueEventListener getMealPlanValueListener() {
         return new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
-                    productCategories.clear();
+                    mealPlanCategories.clear();
                     productCategoriesId.clear();
 
                     if (snapshot.exists()) {
-                        productCategories.add(new IconOption(getString(R.string.all), 0));
+                        mealPlanCategories.add(new IconOption(getString(R.string.all), 0));
                         productCategoriesId.add("prodCat00");
 
-                        for (Product product : products) {
-                            List<String> categoryIds = product.getCategories() != null ?
-                                    new ArrayList<>(product.getCategories().values()) :
+                        for (MealPlan mealPlan : mealPlans) {
+                            List<String> categoryIds = mealPlan.getCategories() != null ?
+                                    new ArrayList<>(mealPlan.getCategories().values()) :
                                     new ArrayList<>();
                             List<String> categories = new ArrayList<>();
 
@@ -298,25 +242,25 @@ public class AdminProductActivity extends AppCompatActivity {
                                 categories.add(snapshot.child(categoryId.trim())
                                         .child("name").getValue(String.class));
 
-                            productsCategories.add(TextUtils.join(", ", categories));
+                            mealPlansCategories.add(TextUtils.join(", ", categories));
                         }
 
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            productCategories.add(new IconOption(dataSnapshot.child("name").getValue(String.class), 0));
+                            mealPlanCategories.add(new IconOption(dataSnapshot.child("name").getValue(String.class), 0));
                             productCategoriesId.add(dataSnapshot.getKey());
 
                             if (selectedCategoryId != null && selectedCategoryId.equals(dataSnapshot.getKey())) {
                                 selectedCategoryIndex = productCategoriesId.size() - 1;
-                                tvSelectedCategory.setText(productCategories.get(selectedCategoryIndex).getLabelName());
+                                tvSelectedCategory.setText(mealPlanCategories.get(selectedCategoryIndex).getLabelName());
                             }
                         }
                     }
 
-                    productsCopy.clear();
-                    productsCategoriesCopy.clear();
+                    mealPlansCopy.clear();
+                    mealPlanCategoriesCopy.clear();
 
-                    productsCopy.addAll(products);
-                    productsCategoriesCopy.addAll(productsCategories);
+                    mealPlansCopy.addAll(mealPlans);
+                    mealPlanCategoriesCopy.addAll(mealPlansCategories);
 
                     filterProducts();
 
@@ -328,7 +272,7 @@ public class AdminProductActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("TAG: " + context.getClass(), "productCategoriesQuery:onCancelled", error.toException());
+                Log.e("TAG: " + context.getClass(), "mealPlanCategoriesQuery:onCancelled", error.toException());
                 loadingDialog.dismissDialog();
 
                 messageDialog.setTextCaption("Failed to get the product categories.");
@@ -340,35 +284,35 @@ public class AdminProductActivity extends AppCompatActivity {
 
     @SuppressLint("NotifyDataSetChanged")
     private void filterProducts() {
-        List<Product> productsTemp = new ArrayList<>(productsCopy);
-        List<String> productsCategoriesTemp = new ArrayList<>(productsCategoriesCopy);
+        List<MealPlan> mealPlansTemp = new ArrayList<>(mealPlansCopy);
+        List<String> mealPlanCategoriesTemp = new ArrayList<>(mealPlanCategoriesCopy);
 
-        products.clear();
+        mealPlans.clear();
 
-        for (int i = 0; i < productsTemp.size(); i++) {
-            List<String> categoriesId = productsTemp.get(i).getCategories() != null ?
-                    new ArrayList<>(productsTemp.get(i).getCategories().values()) :
+        for (int i = 0; i < mealPlansTemp.size(); i++) {
+            List<String> categoriesId = mealPlansTemp.get(i).getCategories() != null ?
+                    new ArrayList<>(mealPlansTemp.get(i).getCategories().values()) :
                     new ArrayList<>();
 
             boolean isSelectedCategory = selectedCategoryId == null || selectedCategoryIndex == 0 ||
                     categoriesId.contains(selectedCategoryId);
 
             boolean isSearchedValue = searchValue == null || searchValue.trim().length() == 0 ||
-                    productsTemp.get(i).getName().toLowerCase().contains(searchValue.trim().toLowerCase()) ||
-                    productsCategoriesTemp.get(i).toLowerCase().contains(searchValue.trim().toLowerCase());
+                    mealPlansTemp.get(i).getName().toLowerCase().contains(searchValue.trim().toLowerCase()) ||
+                    mealPlanCategoriesTemp.get(i).toLowerCase().contains(searchValue.trim().toLowerCase());
 
             if (isSelectedCategory && isSearchedValue) {
-                products.add(productsTemp.get(i));
-                productsCategories.add(productsCategoriesTemp.get(i));
+                mealPlans.add(mealPlansTemp.get(i));
+                mealPlansCategories.add(mealPlanCategoriesTemp.get(i));
             }
         }
 
-        if (products.size() == 0)
-            tvProductCaption.setVisibility(View.VISIBLE);
-        else tvProductCaption.setVisibility(View.GONE);
-        tvProductCaption.bringToFront();
+        if (mealPlans.size() == 0)
+            tvMealPlanCaption.setVisibility(View.VISIBLE);
+        else tvMealPlanCaption.setVisibility(View.GONE);
+        tvMealPlanCaption.bringToFront();
 
-        adminProductAdapter.notifyDataSetChanged();
+        mealPlanAdapter.notifyDataSetChanged();
     }
 
     public void onBackPressed() {
@@ -378,15 +322,15 @@ public class AdminProductActivity extends AppCompatActivity {
             super.onBackPressed();
 
         if (currentStep == 0) {
-            productCategoriesLayout.setVisibility(View.GONE);
-            productsLayout.setVisibility(View.VISIBLE);
+            mealPlanCategoriesLayout.setVisibility(View.GONE);
+            mealPlansLayout.setVisibility(View.VISIBLE);
         }
     }
 
     @Override
     public void onResume() {
         isListening = true;
-        productsQuery.addValueEventListener(getProdCatValueListener());
+        mealPlansQuery.addValueEventListener(getMealPlanValueListener());
 
         super.onResume();
     }

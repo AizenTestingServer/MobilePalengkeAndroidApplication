@@ -242,7 +242,9 @@ public class AccountDetailsActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
                     if (snapshot.exists()) {
-                        List<String> roleIds = new ArrayList<>(user.getRoles().values());
+                        List<String> roleIds = user.getRoles() != null ?
+                                new ArrayList<>(user.getRoles().values()) :
+                                new ArrayList<>();
 
                         String roles = "";
                         for (DataSnapshot dataSnapshot : snapshot.getChildren())

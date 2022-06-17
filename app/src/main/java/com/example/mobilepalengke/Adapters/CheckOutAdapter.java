@@ -58,7 +58,9 @@ public class CheckOutAdapter extends RecyclerView.Adapter<CheckOutAdapter.ViewHo
 
         Order order = orders.get(position);
 
-        List<CheckOutProduct> checkOutProducts = new ArrayList<>(order.getProducts().values());
+        List<CheckOutProduct> checkOutProducts = order.getProducts() != null ?
+                new ArrayList<>(order.getProducts().values()) :
+                new ArrayList<>();
 
         double totalPrice = 0;
         int totalQuantity = 0;

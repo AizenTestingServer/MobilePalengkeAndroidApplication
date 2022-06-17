@@ -214,7 +214,9 @@ public class ChatActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
                     if (snapshot.exists()) {
-                        List<String> roleIds = new ArrayList<>(endPointUser.getRoles().values());
+                        List<String> roleIds = endPointUser.getRoles() != null ?
+                                new ArrayList<>(endPointUser.getRoles().values()) :
+                                new ArrayList<>();
                         List<String> roles = new ArrayList<>();
 
                         for (String roleId : roleIds)
@@ -255,7 +257,7 @@ public class ChatActivity extends AppCompatActivity {
 
                         if (chatId != null) {
                             currentChat = snapshot.child(chatId).getValue(Chat.class);
-                            if (currentChat != null)
+                            if (currentChat != null && currentChat.getIsReading() != null)
                                 for (Map.Entry<String, Boolean> mapIsReading : currentChat.getIsReading().entrySet())
                                     if (mapIsReading.getKey().equals(endPointUid) && mapIsReading.getValue()) {
                                         imgAlert.setVisibility(View.VISIBLE);

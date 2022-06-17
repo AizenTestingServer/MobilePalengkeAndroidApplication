@@ -92,8 +92,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 intent = new Intent(context, OrderDetailsActivity.class);
 
             if (intent != null) {
-                for (Map.Entry<String, String> mapAttributes : notification.getAttributes().entrySet())
-                    intent.putExtra(mapAttributes.getKey(), mapAttributes.getValue());
+                if (notification.getAttributes() != null)
+                    for (Map.Entry<String, String> mapAttributes : notification.getAttributes().entrySet())
+                        intent.putExtra(mapAttributes.getKey(), mapAttributes.getValue());
 
                 intent.putExtra("notificationId", notification.getId());
 

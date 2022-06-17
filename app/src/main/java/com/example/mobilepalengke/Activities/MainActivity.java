@@ -282,8 +282,9 @@ public class MainActivity extends AppCompatActivity {
             notificationIntent = new Intent(context, OrderDetailsActivity.class);
 
         if (notificationIntent != null) {
-            for (Map.Entry<String, String> mapAttributes : notification.getAttributes().entrySet())
-                notificationIntent.putExtra(mapAttributes.getKey(), mapAttributes.getValue());
+            if (notification.getAttributes() != null)
+                for (Map.Entry<String, String> mapAttributes : notification.getAttributes().entrySet())
+                    notificationIntent.putExtra(mapAttributes.getKey(), mapAttributes.getValue());
 
             notificationIntent.putExtra("notificationId", notification.getId());
 

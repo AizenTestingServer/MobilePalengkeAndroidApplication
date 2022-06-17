@@ -296,10 +296,15 @@ public class ChatListFragment extends Fragment {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Chat chat = dataSnapshot.getValue(Chat.class);
                             if (chat != null) {
-                                List<String> participantsId = new ArrayList<>(chat.getParticipants().values());
+                                List<String> participantsId = chat.getParticipants() != null ?
+                                        new ArrayList<>(chat.getParticipants().values()) :
+                                        new ArrayList<>();
+
                                 if (participantsId.contains(uid)) {
                                     chatList.add(chat);
-                                    List<Message> messagesTemp = new ArrayList<>(chat.getMessages().values());
+                                    List<Message> messagesTemp = chat.getMessages() != null ?
+                                            new ArrayList<>(chat.getMessages().values()) :
+                                            new ArrayList<>();
                                     messagesTemp.sort((message, t1) -> message.getId().compareToIgnoreCase(t1.getId()));
                                     Collections.reverse(messagesTemp);
                                     messages.add(messagesTemp.get(0));
@@ -336,7 +341,7 @@ public class ChatListFragment extends Fragment {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             User user = dataSnapshot.getValue(User.class);
-                            if (user != null && !user.getId().equals(uid))
+                            if (user != null && !user.getId().equals(uid) && user.getRoles() != null)
                                 for (Map.Entry<String, String> role : user.getRoles().entrySet())
                                     if (role.getValue().contains("ar")) {
                                         users.add(user);
@@ -347,7 +352,9 @@ public class ChatListFragment extends Fragment {
                         for (Chat chat : chatList) {
                             String endPointUid = uid;
 
-                            List<String> participantsId = new ArrayList<>(chat.getParticipants().values());
+                            List<String> participantsId = chat.getParticipants() != null ?
+                                    new ArrayList<>(chat.getParticipants().values()) :
+                                    new ArrayList<>();
                             for (String participantId : participantsId)
                                 if (!participantId.trim().equals(uid)) {
                                     endPointUid = participantId.trim();
@@ -392,7 +399,9 @@ public class ChatListFragment extends Fragment {
                         adminRolesId.add("ar00");
 
                         for (User user : chattedUsers) {
-                            List<String> roleIds = new ArrayList<>(user.getRoles().values());
+                            List<String> roleIds = user.getRoles() != null ?
+                                    new ArrayList<>(user.getRoles().values()) :
+                                    new ArrayList<>();
                             List<String> roles = new ArrayList<>();
 
                             for (String roleId : roleIds) {
@@ -405,7 +414,9 @@ public class ChatListFragment extends Fragment {
                         }
 
                         for (User user : users) {
-                            List<String> roleIds = new ArrayList<>(user.getRoles().values());
+                            List<String> roleIds = user.getRoles() != null ?
+                                    new ArrayList<>(user.getRoles().values()) :
+                                    new ArrayList<>();
                             List<String> roles = new ArrayList<>();
 
                             for (String roleId : roleIds)
@@ -477,18 +488,18 @@ public class ChatListFragment extends Fragment {
         chattedUsersRoles.clear();
 
         for (int i = 0; i < chatListTemp.size(); i++) {
-            List<String> roleIds = new ArrayList<>(chattedUsersTemp.get(i).getRoles().values());
+            List<String> roleIds = chattedUsersTemp.get(i).getRoles() != null ?
+                    new ArrayList<>(chattedUsersTemp.get(i).getRoles().values()) :
+                    new ArrayList<>();
 
             boolean isSelectedCategory = selectedCategoryId == null || selectedCategoryIndex == 0 ||
                     roleIds.contains(selectedCategoryId);
 
             boolean isSearchedValue = searchValue == null || searchValue.trim().length() == 0 ||
                     (chattedUsersTemp.get(i).getFirstName() + " " + chattedUsersTemp.get(i).getLastName())
-                            .toLowerCase().contains(searchValue.trim().toLowerCase())
-                    ||
+                            .toLowerCase().contains(searchValue.trim().toLowerCase()) ||
                     (chattedUsersTemp.get(i).getLastName() + " " + chattedUsersTemp.get(i).getFirstName())
-                            .toLowerCase().contains(searchValue.trim().toLowerCase())
-                    ||
+                            .toLowerCase().contains(searchValue.trim().toLowerCase()) ||
                     chattedUsersRolesTemp.get(i).toLowerCase().contains(searchValue.trim().toLowerCase());
 
             if (isSelectedCategory && isSearchedValue) {
@@ -517,18 +528,18 @@ public class ChatListFragment extends Fragment {
         usersRoles.clear();
 
         for (int i = 0; i < usersTemp.size(); i++) {
-            List<String> roleIds = new ArrayList<>(usersTemp.get(i).getRoles().values());
+            List<String> roleIds = usersTemp.get(i).getRoles() != null ?
+                    new ArrayList<>(usersTemp.get(i).getRoles().values()) :
+                    new ArrayList<>();
 
             boolean isSelectedRole = selectedRoleId == null || selectedRoleIndex == 0 ||
                     roleIds.contains(selectedRoleId);
 
             boolean isSearchedValue = searchValue2 == null || searchValue2.trim().length() == 0 ||
                     (usersTemp.get(i).getFirstName() + " " + usersTemp.get(i).getLastName())
-                            .toLowerCase().contains(searchValue2.trim().toLowerCase())
-                    ||
+                            .toLowerCase().contains(searchValue2.trim().toLowerCase()) ||
                     (usersTemp.get(i).getLastName() + " " + usersTemp.get(i).getFirstName())
-                            .toLowerCase().contains(searchValue2.trim().toLowerCase())
-                    ||
+                            .toLowerCase().contains(searchValue2.trim().toLowerCase()) ||
                     usersRolesTemp.get(i).toLowerCase().contains(searchValue2.trim().toLowerCase());
 
             if (isSelectedRole && isSearchedValue) {

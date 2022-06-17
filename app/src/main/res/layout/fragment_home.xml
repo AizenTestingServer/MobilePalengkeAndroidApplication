@@ -311,7 +311,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvNewProd2"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNewProdPrice2"
                         tools:ignore="DuplicateSpeakableTextCheck" />
 
                     <ImageView
@@ -320,7 +320,7 @@
                         android:layout_marginTop="16dp"
                         app:layout_constraintEnd_toStartOf="@+id/imgNewProd3"
                         app:layout_constraintStart_toStartOf="@+id/imgNewProd"
-                        app:layout_constraintTop_toBottomOf="@+id/tvNewProd"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNewProdPrice"
                         app:srcCompat="@drawable/ic_image_blue"
                         tools:ignore="ContentDescription" />
 
@@ -371,6 +371,19 @@
                         tools:ignore="TextContrastCheck" />
 
                     <TextView
+                        android:id="@+id/tvNewProdPrice2"
+                        style="@style/TVFontStyle3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/priceText"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvNewProd2"
+                        app:layout_constraintStart_toStartOf="@+id/tvNewProd2"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNewProd2"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
                         android:id="@+id/tvNewProd3"
                         style="@style/TVFontStyle8"
                         android:text="@string/productName"
@@ -380,12 +393,38 @@
                         tools:ignore="TextContrastCheck" />
 
                     <TextView
+                        android:id="@+id/tvNewProdPrice3"
+                        style="@style/TVFontStyle3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/priceText"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvNewProd3"
+                        app:layout_constraintStart_toStartOf="@+id/tvNewProd3"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNewProd3"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
                         android:id="@+id/tvNewProd"
                         style="@style/TVFontStyle8"
                         android:text="@string/productName"
                         app:layout_constraintEnd_toEndOf="@+id/imgNewProd"
                         app:layout_constraintStart_toStartOf="@+id/imgNewProd"
                         app:layout_constraintTop_toBottomOf="@+id/imgNewProd"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
+                        android:id="@+id/tvNewProdPrice"
+                        style="@style/TVFontStyle3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/priceText"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvNewProd"
+                        app:layout_constraintStart_toStartOf="@+id/tvNewProd"
+                        app:layout_constraintTop_toBottomOf="@+id/tvNewProd"
                         tools:ignore="TextContrastCheck" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>
@@ -421,7 +460,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProd2" />
+                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProdPrice2" />
 
                     <ImageView
                         android:id="@+id/imgFeatProd2"
@@ -429,7 +468,7 @@
                         android:layout_marginTop="16dp"
                         app:layout_constraintEnd_toStartOf="@id/imgFeatProd3"
                         app:layout_constraintStart_toStartOf="@+id/imgFeatProd"
-                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProd"
+                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProdPrice"
                         app:srcCompat="@drawable/ic_image_blue"
                         tools:ignore="ContentDescription" />
 
@@ -481,6 +520,19 @@
                         tools:ignore="TextContrastCheck" />
 
                     <TextView
+                        android:id="@+id/tvFeatProdPrice2"
+                        style="@style/TVFontStyle3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/priceText"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvFeatProd2"
+                        app:layout_constraintStart_toStartOf="@+id/tvFeatProd2"
+                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProd2"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
                         android:id="@+id/tvFeatProd3"
                         style="@style/TVFontStyle8"
                         android:text="@string/productName"
@@ -489,12 +541,38 @@
                         app:layout_constraintTop_toBottomOf="@+id/imgFeatProd3" />
 
                     <TextView
+                        android:id="@+id/tvFeatProdPrice3"
+                        style="@style/TVFontStyle3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/priceText"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvFeatProd3"
+                        app:layout_constraintStart_toStartOf="@+id/tvFeatProd3"
+                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProd3"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
                         android:id="@+id/tvFeatProd"
                         style="@style/TVFontStyle8"
                         android:text="@string/productName"
                         app:layout_constraintEnd_toEndOf="@+id/imgFeatProd"
                         app:layout_constraintStart_toStartOf="@+id/imgFeatProd"
                         app:layout_constraintTop_toBottomOf="@+id/imgFeatProd"
+                        tools:ignore="TextContrastCheck" />
+
+                    <TextView
+                        android:id="@+id/tvFeatProdPrice"
+                        style="@style/TVFontStyle3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/priceText"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="@+id/tvFeatProd"
+                        app:layout_constraintStart_toStartOf="@+id/tvFeatProd"
+                        app:layout_constraintTop_toBottomOf="@+id/tvFeatProd"
                         tools:ignore="TextContrastCheck" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.cardview.widget.CardView>

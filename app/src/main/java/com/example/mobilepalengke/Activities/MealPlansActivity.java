@@ -246,7 +246,9 @@ public class MealPlansActivity extends AppCompatActivity {
                         productCategoriesId.add("prodCat00");
 
                         for (MealPlan mealPlan : mealPlans) {
-                            List<String> categoryIds = new ArrayList<>(mealPlan.getCategories().values());
+                            List<String> categoryIds = mealPlan.getCategories() != null ?
+                                    new ArrayList<>(mealPlan.getCategories().values()) :
+                                    new ArrayList<>();
                             List<String> categories = new ArrayList<>();
 
                             for (String categoryId : categoryIds)
@@ -333,7 +335,9 @@ public class MealPlansActivity extends AppCompatActivity {
         mealPlans.clear();
 
         for (int i = 0; i < mealPlansTemp.size(); i++) {
-            List<String> categoriesId = new ArrayList<>(mealPlansTemp.get(i).getCategories().values());
+            List<String> categoriesId = mealPlansTemp.get(i).getCategories() != null ?
+                    new ArrayList<>(mealPlansTemp.get(i).getCategories().values()) :
+                    new ArrayList<>();
 
             boolean isSelectedCategory = selectedCategoryId == null || selectedCategoryIndex == 0 ||
                     categoriesId.contains(selectedCategoryId);

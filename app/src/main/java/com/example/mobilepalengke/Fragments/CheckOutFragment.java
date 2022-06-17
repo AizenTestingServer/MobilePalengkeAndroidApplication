@@ -159,4 +159,26 @@ public class CheckOutFragment extends Fragment {
             }
         };
     }
+
+    @Override
+    public void onResume() {
+        isListening = true;
+        ordersQuery.addValueEventListener(getOrdersValueListener());
+
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        isListening = false;
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        isListening = false;
+
+        super.onDestroy();
+    }
 }

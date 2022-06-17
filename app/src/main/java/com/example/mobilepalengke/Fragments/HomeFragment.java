@@ -60,7 +60,8 @@ public class HomeFragment extends Fragment {
     RecyclerView recyclerView, recyclerView2;
     Button btnDashboard, btnViewAll, btnViewAll2, btnViewAll3, btnViewAll4;
     TextView tvFullName, tvRoles, tvNewProdCaption, tvFeatProdCaption, tvProdCategoryCaption,
-            tvMealPlanCaption, tvNewProd, tvNewProd2, tvNewProd3, tvFeatProd, tvFeatProd2, tvFeatProd3;
+            tvMealPlanCaption, tvNewProd, tvNewProd2, tvNewProd3, tvNewProdPrice, tvNewProdPrice2, tvNewProdPrice3,
+            tvFeatProd, tvFeatProd2, tvFeatProd3, tvFeatProdPrice, tvFeatProdPrice2, tvFeatProdPrice3;
 
     Context context;
 
@@ -105,6 +106,9 @@ public class HomeFragment extends Fragment {
         tvNewProd = view.findViewById(R.id.tvNewProd);
         tvNewProd2 = view.findViewById(R.id.tvNewProd2);
         tvNewProd3 = view.findViewById(R.id.tvNewProd3);
+        tvNewProdPrice = view.findViewById(R.id.tvNewProdPrice);
+        tvNewProdPrice2 = view.findViewById(R.id.tvNewProdPrice2);
+        tvNewProdPrice3 = view.findViewById(R.id.tvNewProdPrice3);
         btnViewAll = view.findViewById(R.id.btnViewAll);
         tvNewProdCaption = view.findViewById(R.id.tvNewProdCaption);
 
@@ -114,6 +118,9 @@ public class HomeFragment extends Fragment {
         tvFeatProd = view.findViewById(R.id.tvFeatProd);
         tvFeatProd2 = view.findViewById(R.id.tvFeatProd2);
         tvFeatProd3 = view.findViewById(R.id.tvFeatProd3);
+        tvFeatProdPrice = view.findViewById(R.id.tvFeatProdPrice);
+        tvFeatProdPrice2 = view.findViewById(R.id.tvFeatProdPrice2);
+        tvFeatProdPrice3 = view.findViewById(R.id.tvFeatProdPrice3);
         btnViewAll2 = view.findViewById(R.id.btnViewAll2);
         tvFeatProdCaption = view.findViewById(R.id.tvFeatProdCaption);
 
@@ -275,7 +282,9 @@ public class HomeFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
                     if (snapshot.exists()) {
-                        List<String> roleIds = new ArrayList<>(user.getRoles().values());
+                        List<String> roleIds = user.getRoles() != null ?
+                                new ArrayList<>(user.getRoles().values()) :
+                                new ArrayList<>();
 
                         String roles = "";
                         for (String roleId : roleIds)
@@ -332,9 +341,11 @@ public class HomeFragment extends Fragment {
                         Picasso.get().load(featuredProducts.get(0).getImg()).placeholder(R.drawable.ic_image_blue)
                                 .error(R.drawable.ic_broken_image_red).into(imgFeatProd);
                         tvFeatProd.setText(featuredProducts.get(0).getName());
+                        tvFeatProdPrice.setText(context.getString(R.string.priceValue, featuredProducts.get(0).getPrice()));
 
                         imgFeatProd.setVisibility(View.VISIBLE);
                         tvFeatProd.setVisibility(View.VISIBLE);
+                        tvFeatProdPrice.setVisibility(View.VISIBLE);
                         tvFeatProdCaption.setVisibility(View.GONE);
 
                         imgFeatProd.setOnClickListener(view -> {
@@ -345,15 +356,18 @@ public class HomeFragment extends Fragment {
                     } else {
                         imgFeatProd.setVisibility(View.GONE);
                         tvFeatProd.setVisibility(View.GONE);
+                        tvFeatProdPrice.setVisibility(View.GONE);
                         tvFeatProdCaption.setVisibility(View.VISIBLE);
                     }
                     if (featuredProducts.size() >= 2) {
                         Picasso.get().load(featuredProducts.get(1).getImg()).placeholder(R.drawable.ic_image_blue)
                                 .error(R.drawable.ic_broken_image_red).into(imgFeatProd2);
                         tvFeatProd2.setText(featuredProducts.get(1).getName());
+                        tvFeatProdPrice2.setText(context.getString(R.string.priceValue, featuredProducts.get(1).getPrice()));
 
                         imgFeatProd2.setVisibility(View.VISIBLE);
                         tvFeatProd2.setVisibility(View.VISIBLE);
+                        tvFeatProdPrice2.setVisibility(View.VISIBLE);
 
                         imgFeatProd2.setOnClickListener(view -> {
                             Intent intent = new Intent(context, ProductDetailsActivity.class);
@@ -363,14 +377,17 @@ public class HomeFragment extends Fragment {
                     } else {
                         imgFeatProd2.setVisibility(View.GONE);
                         tvFeatProd2.setVisibility(View.GONE);
+                        tvFeatProdPrice2.setVisibility(View.GONE);
                     }
                     if (featuredProducts.size() >= 3) {
                         Picasso.get().load(featuredProducts.get(2).getImg()).placeholder(R.drawable.ic_image_blue)
                                 .error(R.drawable.ic_broken_image_red).into(imgFeatProd3);
                         tvFeatProd3.setText(featuredProducts.get(2).getName());
+                        tvFeatProdPrice3.setText(context.getString(R.string.priceValue, featuredProducts.get(2).getPrice()));
 
                         imgFeatProd3.setVisibility(View.VISIBLE);
                         tvFeatProd3.setVisibility(View.VISIBLE);
+                        tvFeatProdPrice3.setVisibility(View.VISIBLE);
 
                         imgFeatProd3.setOnClickListener(view -> {
                             Intent intent = new Intent(context, ProductDetailsActivity.class);
@@ -380,6 +397,7 @@ public class HomeFragment extends Fragment {
                     } else {
                         imgFeatProd3.setVisibility(View.GONE);
                         tvFeatProd3.setVisibility(View.GONE);
+                        tvFeatProdPrice2.setVisibility(View.GONE);
                     }
 
                     newProductsQuery.addValueEventListener(getNewProdValueListener());
@@ -420,9 +438,11 @@ public class HomeFragment extends Fragment {
                         Picasso.get().load(newProducts.get(0).getImg()).placeholder(R.drawable.ic_image_blue)
                                 .error(R.drawable.ic_broken_image_red).into(imgNewProd);
                         tvNewProd.setText(newProducts.get(0).getName());
+                        tvNewProdPrice.setText(context.getString(R.string.priceValue, newProducts.get(0).getPrice()));
 
                         imgNewProd.setVisibility(View.VISIBLE);
                         tvNewProd.setVisibility(View.VISIBLE);
+                        tvNewProdPrice.setVisibility(View.VISIBLE);
                         tvNewProdCaption.setVisibility(View.GONE);
 
                         imgNewProd.setOnClickListener(view -> {
@@ -433,15 +453,18 @@ public class HomeFragment extends Fragment {
                     } else {
                         imgNewProd.setVisibility(View.GONE);
                         tvNewProd.setVisibility(View.GONE);
+                        tvNewProdPrice.setVisibility(View.GONE);
                         tvNewProdCaption.setVisibility(View.VISIBLE);
                     }
                     if (newProducts.size() >= 2) {
                         Picasso.get().load(newProducts.get(1).getImg()).placeholder(R.drawable.ic_image_blue)
                                 .error(R.drawable.ic_broken_image_red).into(imgNewProd2);
                         tvNewProd2.setText(newProducts.get(1).getName());
+                        tvNewProdPrice2.setText(context.getString(R.string.priceValue, newProducts.get(1).getPrice()));
 
                         imgNewProd2.setVisibility(View.VISIBLE);
                         tvNewProd2.setVisibility(View.VISIBLE);
+                        tvNewProdPrice2.setVisibility(View.VISIBLE);
 
                         imgNewProd2.setOnClickListener(view -> {
                             Intent intent = new Intent(context, ProductDetailsActivity.class);
@@ -451,14 +474,17 @@ public class HomeFragment extends Fragment {
                     } else {
                         imgNewProd2.setVisibility(View.GONE);
                         tvNewProd2.setVisibility(View.GONE);
+                        tvNewProdPrice2.setVisibility(View.GONE);
                     }
                     if (newProducts.size() >= 3) {
                         Picasso.get().load(newProducts.get(2).getImg()).placeholder(R.drawable.ic_image_blue)
                                 .error(R.drawable.ic_broken_image_red).into(imgNewProd3);
                         tvNewProd3.setText(newProducts.get(2).getName());
+                        tvNewProdPrice3.setText(context.getString(R.string.priceValue, newProducts.get(2).getPrice()));
 
                         imgNewProd3.setVisibility(View.VISIBLE);
                         tvNewProd3.setVisibility(View.VISIBLE);
+                        tvNewProdPrice3.setVisibility(View.VISIBLE);
 
                         imgNewProd3.setOnClickListener(view -> {
                             Intent intent = new Intent(context, ProductDetailsActivity.class);
@@ -468,6 +494,7 @@ public class HomeFragment extends Fragment {
                     } else {
                         imgNewProd3.setVisibility(View.GONE);
                         tvNewProd3.setVisibility(View.GONE);
+                        tvNewProdPrice3.setVisibility(View.GONE);
                     }
 
                     productCategoriesQuery.addValueEventListener(getProdCatValueListener());

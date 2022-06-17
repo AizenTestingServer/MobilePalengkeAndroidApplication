@@ -109,7 +109,7 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
 
                     for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                         MealPlan mealPlan = dataSnapshot.getValue(MealPlan.class);
-                        if (mealPlan != null)
+                        if (mealPlan != null && mealPlan.getCategories() != null)
                             for (Map.Entry<String, String> mapMealPlanCategories : mealPlan.getCategories().entrySet())
                                 if (currentMealPlan != null && !currentMealPlan.getId().equals(mealPlan.getId()) &&
                                         currentMealPlan.getCategories().containsValue(mapMealPlanCategories.getValue())) {
@@ -130,7 +130,7 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
                 for (int i = 0; i < Math.min(4, relatedMealPlansCopy.size()); i++)
                     relatedMealPlans.add(relatedMealPlansCopy.get(i));
 
-                mealPlanCategoriesQuery.addValueEventListener(getProdCatValueListener());
+                mealPlanCategoriesQuery.addValueEventListener(getMealPlanCatValueListener());
             }
 
             @Override
@@ -145,7 +145,7 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
         };
     }
 
-    private ValueEventListener getProdCatValueListener() {
+    private ValueEventListener getMealPlanCatValueListener() {
         return new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -153,7 +153,9 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
                 if (isListening) {
                     mealPlanCategories.clear();
 
-                    List<String> categoryIds = new ArrayList<>(currentMealPlan.getCategories().values());
+                    List<String> categoryIds = currentMealPlan.getCategories() != null ?
+                            new ArrayList<>(currentMealPlan.getCategories().values()) :
+                            new ArrayList<>();
 
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {

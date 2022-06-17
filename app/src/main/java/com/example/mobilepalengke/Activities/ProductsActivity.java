@@ -297,7 +297,9 @@ public class ProductsActivity extends AppCompatActivity {
                         productCategoriesId.add("prodCat00");
 
                         for (Product product : products) {
-                            List<String> categoryIds = new ArrayList<>(product.getCategories().values());
+                            List<String> categoryIds = product.getCategories() != null ?
+                                    new ArrayList<>(product.getCategories().values()) :
+                                    new ArrayList<>();
                             List<String> categories = new ArrayList<>();
 
                             for (String categoryId : categoryIds)
@@ -395,7 +397,9 @@ public class ProductsActivity extends AppCompatActivity {
         products.clear();
 
         for (int i = 0; i < productsTemp.size(); i++) {
-            List<String> categoriesId = new ArrayList<>(productsTemp.get(i).getCategories().values());
+            List<String> categoriesId = productsTemp.get(i).getCategories() != null ?
+                    new ArrayList<>(productsTemp.get(i).getCategories().values()) :
+                    new ArrayList<>();
 
             boolean isSelectedCategory = selectedCategoryId == null || selectedCategoryIndex == 0 ||
                     categoriesId.contains(selectedCategoryId);

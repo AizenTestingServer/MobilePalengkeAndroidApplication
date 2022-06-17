@@ -186,8 +186,6 @@ public class CartFragment extends Fragment {
                             if (cartProduct != null) cartProducts.add(cartProduct);
                         }
 
-                    loadingDialog.dismissDialog();
-
                     productsQuery.addValueEventListener(getProductsValueListener());
                 }
             }
@@ -224,6 +222,7 @@ public class CartFragment extends Fragment {
                         tvCartProductCaption.setVisibility(View.GONE);
                     tvCartProductCaption.bringToFront();
 
+                    cartProductAdapter.setCheckOutProducts(new ArrayList<>());
                     cartProductAdapter.notifyDataSetChanged();
 
                     loadingDialog.dismissDialog();

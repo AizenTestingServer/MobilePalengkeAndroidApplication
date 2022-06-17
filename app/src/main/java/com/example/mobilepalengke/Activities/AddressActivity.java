@@ -96,29 +96,32 @@ public class AddressActivity extends AppCompatActivity {
 
         btnAddAddress.setOnClickListener(view -> addressDialog.showDialog());
 
-        addressDialog.setDialogListener((addressId, label, value) -> {
+        addressDialog.setDialogListener((address) -> {
             loadingDialog.showDialog();
 
+            String addressId = address.getId();
             boolean isAddMode = false;
 
             if (addressId == null) {
                 addressId = "add"
-                        + ((String.valueOf(overallAddressCount + 1).length() < 2) ? "0" + (overallAddressCount + 1)
-                                : (int) (overallAddressCount + 1));
+                        + ((String.valueOf(overallAddressCount + 1).length() < 2) ?
+                        "0" + (overallAddressCount + 1) :
+                        (int) (overallAddressCount + 1));
                 isAddMode = true;
             }
 
             String toastMessage = "Successfully " + (isAddMode ? "added" : "updated") + " your address.";
 
-            Address address = new Address(addressId, uid, label, value);
+            Address newAddress = new Address(addressId, uid, address.getName(), address.getValue());
 
             firebaseDatabase.getReference("addressList").child(addressId)
-                    .setValue(address).addOnCompleteListener(task -> {
+                    .setValue(newAddress).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(
                                     context,
                                     toastMessage,
-                                    Toast.LENGTH_SHORT).show();
+                                    Toast.LENGTH_SHORT
+                            ).show();
 
                             addressDialog.dismissDialog();
                         } else {
