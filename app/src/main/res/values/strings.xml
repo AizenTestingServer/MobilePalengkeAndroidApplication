@@ -1,0 +1,220 @@
+<resources>
+    <string name="firebase_RTDB_url">https://mobile-palengke-default-rtdb.asia-southeast1.firebasedatabase.app/</string>
+    <string name="about_us_url">https://mobilepalengke.org/about</string>
+    <string name="contact_us_url">https://mobilepalengke.org/contact-form/</string>
+    <string name="faq_url">https://mobilepalengke.org/faq/</string>
+    <string name="reviews_url">https://mobilepalengke.org/review-page/</string>
+    <string name="terms_and_conditions_url">https://mobilepalengke.org/terms</string>
+    <string name="privacy_policy_url">
+        https://mobilepalengke.org/privacy/?fbclid=IwAR2i4HrTCq_zAKjsgeR-XBaJ2GC4b5dSvOlt2Xtdu6GjSrXlh4ZPXNTN-lE
+    </string>
+    <string name="mp_facebook_url">https://www.facebook.com/MobilePalengke</string>
+    <string name="mp_twitter_url">https://twitter.com/mobilepalengke</string>
+    <string name="mp_instagram_url">https://instagram.com/mobilepalengke</string>
+
+    <string name="app_name">Mobile Palengke</string>
+
+    <string name="btnSignIn">Sign In</string>
+    <string name="btnSignUp">Sign Up</string>
+    <string name="btnSignOut">Sign Out</string>
+    <string name="btnNext">Next</string>
+    <string name="btnChangeName">Change Name</string>
+    <string name="btnChangeEmail">Change Email Address</string>
+    <string name="btnChangePassword">Change Password</string>
+    <string name="btnConfirm">Confirm</string>
+    <string name="btnComposeMessage">Compose Message</string>
+    <string name="btnChange">Change</string>
+    <string name="btnBack">Back</string>
+    <string name="btnAddToCart">Add to Cart</string>
+    <string name="btnRemove">Remove</string>
+    <string name="btnCheckOut">Check-out</string>
+    <string name="btnAddAddress">Add Address</string>
+    <string name="btnDashboard">Go to Dashboard</string>
+    <string name="btnManage">Manage</string>
+
+    <string name="welcome1">Welcome to Mobile Palengke</string>
+    <string name="welcome2">Here to make your life easier.\nJust tap your order and we\'ll deliver</string>
+
+    <string name="enterCredentials">Please enter your credentials.</string>
+
+    <string name="loadingText">Loading, please wait…</string>
+    <string name="messageText">This is a message.</string>
+    <string name="unregisteredAccountText">Unregistered account</string>
+    <string name="okText">OK</string>
+    <string name="comingSoon">Coming soon</string>
+
+    <string name="accDetails1">Account Details</string>
+    <string name="accDetails2">Public Details</string>
+    <string name="accDetails3">Last Name</string>
+    <string name="accDetails4">First Name</string>
+    <string name="accDetails5">Private Details</string>
+    <string name="accDetails6">Email Address</string>
+    <string name="accDetails7">Password</string>
+    <string name="accDetails8">Confirm Password</string>
+    <string name="accDetails9">Hidden</string>
+    <string name="none">None</string>
+    <string name="resendLink">Resend Link</string>
+    <string name="timer">0:00</string>
+
+    <string name="signIn1">Forgot Password?</string>
+    <string name="signUp1">By signing up you accept our:</string>
+    <string name="signUp2">Terms and Conditions</string>
+    <string name="signUp3">Privacy Policy</string>
+
+    <string name="editText1">Last Name</string>
+    <string name="editText2">First Name</string>
+    <string name="editText3">Email Address</string>
+    <string name="editText4">Password</string>
+    <string name="editText5">Enter 6-digit code</string>
+    <string name="editText6">New Password</string>
+    <string name="editText7">Confirm Password</string>
+    <string name="editText8">Current Password</string>
+
+    <string name="invalidName">Must be between 2 and 16 characters.</string>
+    <string name="invalidEmail">Invalid Email Address</string>
+    <string name="invalidPassword">Must be at least 6 characters.</string>
+    <string name="invalidPassword2">Must not contain spaces and symbols.</string>
+    <string name="reenterPassword">Please re-enter the password.</string>
+    <string name="noMatchPassword">Password does not match.</string>
+    <string name="enterCurrentPassword">Please enter the current password.</string>
+    <string name="noMatchPassword2">Current Password does not match.</string>
+
+    <string name="forgotPassword1">Recover your password</string>
+    <string name="forgotPassword2">Please enter the email address that is associated with your Mobile Palengke account.</string>
+
+    <string name="navMenu1">My Account</string>
+    <string name="navMenu3">Settings</string>
+    <string name="navMenu4">Sign Out</string>
+    <string name="navDrawer1">Open Navigation drawer</string>
+    <string name="navDrawer2">Close Navigation drawer</string>
+
+    <string name="home1">Home</string>
+    <string name="home2">Featured Products</string>
+    <string name="home3">New Products</string>
+    <string name="home4">Product Categories</string>
+    <string name="home5">Meal Plans</string>
+    <string name="viewAllProd">View All Products</string>
+    <string name="viewAllProdCat">View All Product Categories</string>
+    <string name="viewAllMealPlans">View All Meal Plans</string>
+    <string name="defaultRecordCaption">No Record</string>
+    <string name="noRecordCaptionValue">No %s</string>
+
+    <string name="welcomeAdmin">Welcome Admin</string>
+
+    <string name="productDetails">Product Details</string>
+    <string name="products">Products</string>
+    <string name="productName">Product Name</string>
+    <string name="priceText">Price</string>
+    <string name="productDesc">• Description 1\n• Description 2\n• Description 3</string>
+    <string name="priceValue">₱%.2f</string>
+    <string name="qtyText">1</string>
+    <string name="qtyValue">%d</string>
+    <string name="addSymbol">+</string>
+    <string name="subtractSymbol">-</string>
+
+    <string name="navigation">Navigation</string>
+    <string name="categories">Categories</string>
+    <string name="productCategories">Product Categories</string>
+    <string name="productCategory">Product Category</string>
+    <string name="relatedProducts">Related Products</string>
+    <string name="searchProduct">Search Product</string>
+    <string name="mealPlanCategories">Meal Plan Categories</string>
+    <string name="mealPlanCategory">Meal Plan Category</string>
+    <string name="mealPlans">Meal Plans</string>
+    <string name="mealPlan">Meal Plan</string>
+    <string name="searchMealPlan">Search Meal Plan</string>
+
+    <string name="mealPlanDetails">Meal Plan Details</string>
+
+    <string name="chatList">Chat List</string>
+    <string name="composeMessage">Compose Message</string>
+    <string name="searchChat">Search Chat</string>
+    <string name="searchUser">Search User</string>
+    <string name="chatCategory">Chat Category</string>
+    <string name="userRole">User Role</string>
+    <string name="all">All</string>
+    <string name="chatCategories">Chat Categories</string>
+    <string name="userRoles">User Roles</string>
+    <string name="selectOne">Please select one</string>
+    <string name="roles">Roles</string>
+    <string name="latestMessage">Latest Message</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="enterMessage">Please enter your message here.</string>
+
+    <string name="notifications">Notifications</string>
+    <string name="noNewNotifications">No New Notifications</string>
+    <string name="notificationCountValue">0</string>
+    <string name="notificationTitle">Mobile Palengke</string>
+    <string name="notificationText">Mobile Palengke notified you.</string>
+
+    <string name="more">More</string>
+    <string name="fullNameText">Full Name</string>
+    <string name="moreOption1">Account Details</string>
+    <string name="moreOption2">Address List</string>
+    <string name="moreOption3">Settings</string>
+    <string name="moreOption4">About</string>
+    <string name="moreOption5">Contact Us</string>
+    <string name="moreOption6">FAQ</string>
+    <string name="moreOption7">Reviews</string>
+    <string name="moreOption8">Terms and Conditions</string>
+    <string name="moreOption9">Privacy Policy</string>
+
+    <string name="labelText">Label</string>
+    <string name="address">Address</string>
+    <string name="addAddress">Add Address</string>
+    <string name="updateAddress">Update Address</string>
+    <string name="enterAddress">Please enter your address</string>
+    <string name="invalidLabel">Label must be between 2 and 16 characters.</string>
+    <string name="invalidAddress">Address must at least 2 characters</string>
+
+    <string name="cart">Cart</string>
+    <string name="selectAll">Select All</string>
+    <string name="cartQty">%d/%d</string>
+    <string name="totalPriceText">₱0.00</string>
+    <string name="totalQuantityText">Total Quantity: 0 Product</string>
+    <string name="totalQuantityValue">Total Quantity: %d Product%s</string>
+    <string name="orderSummary">Order Summary</string>
+    <string name="checkOutQtyValue">%d Order%s</string>
+    <string name="checkOutQtyText">1 Order</string>
+    <string name="stepText">Step 1 of 2</string>
+    <string name="stepValue">Step %d of %d</string>
+    <string name="contactsNAddress">Contacts &amp; Address</string>
+    <string name="paymentMethod">Payment Method</string>
+
+    <string name="checkOut">Check-out</string>
+    <string name="deliveryAddress">Delivery Address</string>
+    <string name="ctrQtyText">1×</string>
+    <string name="ctrQtyValue">%d×</string>
+    <string name="processing">Processing</string>
+    <string name="shipping">Shipping</string>
+    <string name="delivered">Delivered</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="orderDetails">Order Details</string>
+
+    <string name="dashboard">Dashboard</string>
+    <string name="orders">Orders</string>
+    <string name="users">Users</string>
+
+    <string name="countText">0</string>
+    <string name="countValue">%d</string>
+
+    <string name="addProduct">Add Product</string>
+    <string name="updateProduct">Update Product</string>
+    <string name="enterProduct">Please enter the product</string>
+    <string name="imageLink">Image Link</string>
+    <string name="qtyProductDescriptionText">1 Description</string>
+    <string name="qtyProductCategoriesText">1 Category</string>
+    <string name="qtyProductDescriptionValue">%d Description%s</string>
+    <string name="qtyProductCategoriesValue">%d Categor%s</string>
+
+    <string name="insertDetailsNote">Insert Details Here</string>
+
+    <string-array name="LanguageArray">
+        <item>English</item>
+    </string-array>
+
+    <string-array name="CurrencyArray">
+        <item>PHP</item>
+        <item>USD</item>
+    </string-array>
+</resources>

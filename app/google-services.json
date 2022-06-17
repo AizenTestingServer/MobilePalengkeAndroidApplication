@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "894895049036",
+    "firebase_url": "https://mobile-palengke-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "mobile-palengke",
+    "storage_bucket": "mobile-palengke.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894895049036:android:90ce0e4b1eb1dfab1b27e9",
+        "android_client_info": {
+          "package_name": "com.example.mobilepalengke"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "894895049036-o1gi4bpoeu8vcth9lani4o65pj2d71uu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAy8rTIB4lTzvYVqXEuyMqp_4IkIFFOynU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "894895049036-o1gi4bpoeu8vcth9lani4o65pj2d71uu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

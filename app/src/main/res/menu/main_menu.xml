@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/homeFragment"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:title="@string/home1" />
+
+    <item
+        android:id="@+id/categoriesFragment"
+        android:icon="@drawable/ic_baseline_category_24"
+        android:title="@string/categories" />
+
+    <item
+        android:id="@+id/chatListFragment"
+        android:icon="@drawable/ic_baseline_chat_bubble_24"
+        android:title="@string/chatList" />
+
+    <item
+        android:id="@+id/notificationFragment"
+        android:icon="@drawable/ic_baseline_notifications_24"
+        android:title="@string/notifications" />
+
+    <item
+        android:id="@+id/moreFragment"
+        android:icon="@drawable/ic_baseline_more_horiz_24"
+        android:title="@string/more" />
+
+</menu>
