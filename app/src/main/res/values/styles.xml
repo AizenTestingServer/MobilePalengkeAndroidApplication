@@ -59,6 +59,11 @@
         <item name="rippleColor">@color/white</item>
     </style>
 
+    <style name="MaterialBtnStyle.Button8" parent="MaterialBtnStyle.Button6">
+        <item name="android:padding">0dp</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
     <style name="FlatButtonStyle1">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -70,6 +75,51 @@
     </style>
 
     <style name="FlatButtonStyle2" parent="FlatButtonStyle1">
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:background">@drawable/custom_blue_ripple_effect</item>
+    </style>
+
+    <style name="FlatButtonStyle3">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:textColor">@color/mp_blue</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:background">@drawable/custom_blue_ripple_effect</item>
+    </style>
+
+    <style name="FlatButtonStyle4" parent="FlatButtonStyle1">
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/mp_black_title</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:background">@drawable/custom_blue_ripple_effect</item>
+    </style>
+
+    <style name="FlatButtonStyle5" parent="FlatButtonStyle4">
+        <item name="android:textColor">@color/mp_darkGray</item>
+        <item name="buttonTint">@color/mp_darkGray</item>
+    </style>
+
+    <style name="FlatButtonStyle6">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/mp_blue</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:background">@drawable/custom_blue_corner_ripple_effect</item>
+    </style>
+
+    <style name="FlatButtonStyle7" parent="FlatButtonStyle1">
+        <item name="android:textColor">@color/mp_blue</item>
         <item name="android:textSize">16sp</item>
         <item name="android:padding">8dp</item>
         <item name="android:drawablePadding">8dp</item>
@@ -166,6 +216,78 @@
         <item name="android:textColor">@color/mp_black_regular</item>
         <item name="android:fontFamily">@font/poppins_semibold</item>
     </style>
+
+    <style name="TVFontStyle13" parent="TVFontStyle8">
+        <item name="android:background">@color/mp_blue</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TVFontStyle14" parent="TVFontStyle8">
+        <item name="android:background">@color/mp_yellow</item>
+        <item name="android:textColor">@color/mp_black_regular</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TVFontStyle15">
+        <item name="android:background">@drawable/bg_white_corner</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textColor">@color/mp_blue</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+    </style>
+
+    <style name="TVFontStyle16">
+        <item name="android:background">@drawable/bg_white_corner</item>
+        <item name="android:textColor">@color/mp_black_regular</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">4dp</item>
+    </style>
+
+    <style name="TVFontStyle17">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textColor">@color/mp_blue</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="TVFontStyle18">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:padding">8dp</item>
+    </style>
+
+    <style name="TVFontStyle19">
+        <item name="android:background">@drawable/bg_blue_corner</item>
+        <item name="android:padding">4dp</item>
+        <item name="android:paddingStart">24dp</item>
+        <item name="android:paddingEnd">24dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:fontFamily">@font/poppins_semibold</item>
+    </style>
+
+    <style name="TVFontStyle20" parent="TVFontStyle8">
+        <item name="android:background">@color/black_accent</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TVFontStyle21">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="android:textAlignment">textStart</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
     <!-- Text Views Font Style - END -->
 
     <!-- Edit Text Fields Style - START -->
@@ -221,10 +343,6 @@
     <style name="CardViewStyle3">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginTop">15dp</item>
-        <item name="android:layout_marginBottom">25dp</item>
-        <item name="android:layout_marginStart">15dp</item>
-        <item name="android:layout_marginEnd">15dp</item>
         <item name="cardBackgroundColor">@color/white</item>
         <item name="cardCornerRadius">5dp</item>
         <item name="cardElevation">5dp</item>
@@ -242,6 +360,40 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="cardCornerRadius">20dp</item>
+        <item name="cardElevation">5dp</item>
+    </style>
+
+    <style name="CardViewStyle6">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardElevation">5dp</item>
+    </style>
+
+    <style name="CardViewStyle7">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardBackgroundColor">@color/mp_white_accent</item>
+        <item name="cardElevation">5dp</item>
+    </style>
+
+    <style name="CardViewStyle8">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardElevation">5dp</item>
+    </style>
+
+    <style name="CardViewStyle9">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="cardBackgroundColor">@color/mp_gray_accent</item>
+        <item name="cardElevation">5dp</item>
+    </style>
+
+    <style name="CardViewStyle10">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="cardElevation">5dp</item>
     </style>
     <!-- CardView Style - END -->
@@ -266,10 +418,5 @@
 
     <style name="CircleButton1">
         <item name="android:background">@color/mp_red</item>
-    </style>
-
-    <!-- Progress Bar Style - START -->
-    <style name="ProgressBarStyle1">
-        <item name="android:visibility">gone</item>
     </style>
 </resources>

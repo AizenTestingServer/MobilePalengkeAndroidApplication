@@ -43,7 +43,8 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout,
+                backgroundLayout = holder.backgroundLayout;
         TextView tvFullName = holder.tvFullName,
                 tvRoles = holder.tvRoles;
 
@@ -55,19 +56,19 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
         tvFullName.setText(fullName);
         tvRoles.setText(roles);
 
-        int top = dpToPx(4), bottom = dpToPx(4);
+        int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position == 0, isLastItem = position == users.size() - 1;
 
         if (isFirstItem)
-            top = dpToPx(8);
+            top = dpToPx(4);
         if (isLastItem)
-            bottom = dpToPx(8);
+            bottom = dpToPx(4);
 
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
         layoutParams.topMargin = top;
         layoutParams.bottomMargin = bottom;
-        backgroundLayout.setLayoutParams(layoutParams);
+        constraintLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
             Intent intent = new Intent(context, ChatActivity.class);
@@ -82,12 +83,13 @@ public class ChatUserAdapter extends RecyclerView.Adapter<ChatUserAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         TextView tvFullName, tvRoles;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             tvFullName = itemView.findViewById(R.id.tvFullName);
             tvRoles = itemView.findViewById(R.id.tvRoles);

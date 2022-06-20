@@ -3,11 +3,43 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_black_accent_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_blue_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_green_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_notification_counter.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_red_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_white_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/bg_yellow_corner.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/custom_blue_corner_ripple_effect.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/custom_blue_ripple_effect.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/custom_end_corner_radius_button_ripple_white_background.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/custom_start_corner_radius_button_ripple_white_background.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_123.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_123_blue.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_123_focused.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_123_red.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_access_time.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_access_time_blue.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_access_time_focused.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_access_time_red.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_close_red.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_groups.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_groups_blue.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_groups_focused.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_groups_red.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_phone.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_phone_blue.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_phone_focused.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_phone_red.xml" value="0.1" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/drawable/ic_price_change_red.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_account_details.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_address.xml" value="0.2722222222222222" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin.xml" value="0.1" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin.xml" value="0.22" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_meal_plan_details.xml" value="0.2517948717948718" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_meal_plans.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_order.xml" value="0.2515625" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_order_details.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_product.xml" value="0.3287037037037037" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_roles.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_admin_users.xml" value="0.2722222222222222" />
@@ -18,36 +50,76 @@
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_meal_plan_categories.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_meal_plan_details.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_meal_plans.xml" value="0.2722222222222222" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_order_details.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_order_details.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_product_categories.xml" value="0.2722222222222222" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_product_details.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_product_details.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_products.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_settings.xml" value="0.2515625" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_splash_screen.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/activity_welcome_screen.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_address_layout.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_admin_meal_plan_product_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_admin_order_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_admin_product_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_cart_product_layout.xml" value="0.26666666666666666" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_chat_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_chat_message_layout.xml" value="0.26666666666666666" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_chat_user_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_check_out_layout.xml" value="0.21666666666666667" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_check_out_layout_colored.xml" value="0.21666666666666667" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_check_out_product_layout.xml" value="0.21666666666666667" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_checkable_list_2_layout.xml" value="0.25" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_checkable_list_layout.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_checkable_list_layout_2.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_listed_icon_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_meal_plan_category_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_notification_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_order_layout.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_order_layout_colored.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_order_product_grid_layout.xml" value="0.2222222222222222" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_order_product_layout.xml" value="0.24270833333333333" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_ordered_list_layout.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_product_category_button_layout.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_product_category_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_product_grid_check_out_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_product_layout.xml" value="0.3287037037037037" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_role_layout.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_string_value_list_layout.xml" value="0.24270833333333333" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/custom_user_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_add_product_to_meal_plan_layout.xml" value="0.26666666666666666" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_address_layout.xml" value="0.3287037037037037" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_change_email_address_layout.xml" value="0.3287037037037037" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_change_name_layout.xml" value="0.3287037037037037" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_change_password_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_confirmation_layout.xml" value="0.24270833333333333" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_loading_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_meal_plan_categories_layout.xml" value="0.31296296296296294" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_meal_plan_overview_layout.xml" value="0.23489583333333333" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_meal_plan_primary_details_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_message_layout.xml" value="0.3287037037037037" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_product_layout.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_order_details.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_order_status_layout.xml" value="0.32222222222222224" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_product_categories_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_product_category_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_product_descriptions_layout.xml" value="0.31296296296296294" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_product_layout.xml" value="0.33" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_role_categories_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_role_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_role_types_layout.xml" value="0.21666666666666667" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_roles_layout.xml" value="0.26666666666666666" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_string_value_layout.xml" value="0.24270833333333333" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/dialog_string_values_layout.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_cart.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_categories.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_chat_list.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_check_out.xml" value="0.2515625" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_dashboard.xml" value="0.3287037037037037" />
-        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_home.xml" value="0.3287037037037037" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_home.xml" value="0.33" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_meal_plan_categories.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_notification.xml" value="0.2722222222222222" />
         <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/layout/fragment_product_categories.xml" value="0.2722222222222222" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/menu/admin_menu.xml" value="0.21666666666666667" />
+        <entry key="..\:/Users/princ/AndroidStudioProjects/MobilePalengke/app/src/main/res/menu/main_menu.xml" value="0.21666666666666667" />
       </map>
     </option>
   </component>

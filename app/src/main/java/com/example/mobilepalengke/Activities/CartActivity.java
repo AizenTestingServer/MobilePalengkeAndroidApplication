@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.mobilepalengke.Adapters.CartFragmentAdapter;
 import com.example.mobilepalengke.Fragments.CartFragment;
-import com.example.mobilepalengke.Fragments.CheckOutFragment;
+import com.example.mobilepalengke.Fragments.OrdersFragment;
 import com.example.mobilepalengke.R;
 import com.google.android.material.tabs.TabLayout;
 
@@ -30,7 +30,7 @@ public class CartActivity extends AppCompatActivity {
     FragmentActivity fragmentActivity;
 
     CartFragment cartFragment = new CartFragment();
-    CheckOutFragment checkOutFragment = new CheckOutFragment();
+    OrdersFragment ordersFragment = new OrdersFragment();
 
     CartFragmentAdapter cartFragmentAdapter;
 
@@ -52,8 +52,14 @@ public class CartActivity extends AppCompatActivity {
         if (fragmentActivity != null) {
             FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
 
+            Bundle bundle = new Bundle();
+            bundle.putString("productId", productId);
+            cartFragment.setArguments(bundle);
+
+            cartFragment.setFragmentListener(CartActivity.this::onBackPressed);
+
             cartFragmentAdapter = new CartFragmentAdapter(fragmentManager, getLifecycle(),
-                    cartFragment, checkOutFragment, productId);
+                    cartFragment, ordersFragment, productId);
             viewPager2.setAdapter(cartFragmentAdapter);
 
             Typeface typeface = ResourcesCompat.getFont(context, R.font.poppins_regular);

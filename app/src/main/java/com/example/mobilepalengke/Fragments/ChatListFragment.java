@@ -36,7 +36,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -342,11 +341,7 @@ public class ChatListFragment extends Fragment {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             User user = dataSnapshot.getValue(User.class);
                             if (user != null && !user.getId().equals(uid) && user.getRoles() != null)
-                                for (Map.Entry<String, String> role : user.getRoles().entrySet())
-                                    if (role.getValue().contains("ar")) {
-                                        users.add(user);
-                                        break;
-                                    }
+                                users.add(user);
                         }
 
                         for (Chat chat : chatList) {
@@ -413,21 +408,28 @@ public class ChatListFragment extends Fragment {
                             chattedUsersRoles.add(TextUtils.join(", ", roles));
                         }
 
+                        List<User> usersTemp = new ArrayList<>();
+
                         for (User user : users) {
                             List<String> roleIds = user.getRoles() != null ?
                                     new ArrayList<>(user.getRoles().values()) :
                                     new ArrayList<>();
                             List<String> roles = new ArrayList<>();
 
-                            for (String roleId : roleIds)
-                                if (roleId.contains("ar")) {
-                                    Role role = snapshot.child(roleId.trim()).getValue(Role.class);
-                                    if (role != null)
-                                        roles.add(role.getName());
-                                }
+                            for (String roleId : roleIds) {
+                                Role role = snapshot.child(roleId.trim()).getValue(Role.class);
+                                if (role != null)
+                                    roles.add(role.getName());
+                            }
 
-                            usersRoles.add(TextUtils.join(", ", roles));
+                            if (TextUtils.join(", ", roles).length() != 0) {
+                                usersTemp.add(user);
+                                usersRoles.add(TextUtils.join(", ", roles));
+                            }
                         }
+
+                        users.clear();
+                        users.addAll(usersTemp);
 
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Role role = dataSnapshot.getValue(Role.class);
@@ -581,7 +583,7 @@ public class ChatListFragment extends Fragment {
     @Override
     public void onResume() {
         isListening = true;
-        chatListQuery.addValueEventListener(getChatListValueListener());
+        chatListQuery.addListenerForSingleValueEvent(getChatListValueListener());
 
         super.onResume();
     }

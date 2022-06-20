@@ -141,7 +141,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onResume() {
         isListening = true;
-        firebaseDatabase.getReference().addValueEventListener(getGeneralReference());
+        firebaseDatabase.getReference().addListenerForSingleValueEvent(getGeneralReference());
 
         super.onResume();
     }

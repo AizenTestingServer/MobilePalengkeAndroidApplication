@@ -18,15 +18,14 @@ import androidx.core.content.ContextCompat;
 
 public class ChangePasswordDialog {
 
-    TextView tvErrorCaption;
-    EditText etPassword, etPassword2, etPassword3;
-    Button btnConfirm, btnCancel;
+    private TextView tvErrorCaption;
+    private EditText etPassword, etPassword2, etPassword3;
 
-    String password, confirmPassword, currentPassword, currentPassword2;
+    private final Context context;
+    private final Activity activity;
+    private Dialog dialog;
 
-    Context context;
-    Activity activity;
-    Dialog dialog;
+    private String password, confirmPassword, currentPassword, currentPassword2;
 
     public ChangePasswordDialog(Context context) {
         this.context = context;
@@ -45,14 +44,13 @@ public class ChangePasswordDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_change_password_layout);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
 
         tvErrorCaption = dialog.findViewById(R.id.tvErrorCaption);
         etPassword = dialog.findViewById(R.id.etPassword);
         etPassword2 = dialog.findViewById(R.id.etPassword2);
         etPassword3 = dialog.findViewById(R.id.etPassword3);
-        btnConfirm = dialog.findViewById(R.id.btnConfirm);
-        btnCancel = dialog.findViewById(R.id.btnCancel);
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
         etPassword.addTextChangedListener(new TextWatcher() {
             @Override

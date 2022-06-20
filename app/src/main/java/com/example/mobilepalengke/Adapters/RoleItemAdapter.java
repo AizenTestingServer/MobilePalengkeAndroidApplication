@@ -26,6 +26,8 @@ public class RoleItemAdapter extends RecyclerView.Adapter<RoleItemAdapter.ViewHo
 
     LoadingDialog loadingDialog;
 
+    int level;
+
     public RoleItemAdapter(Context context, List<RoleItem> roles) {
         this.roles = roles;
         this.layoutInflater = LayoutInflater.from(context);
@@ -44,28 +46,40 @@ public class RoleItemAdapter extends RecyclerView.Adapter<RoleItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull RoleItemAdapter.ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout,
+                backgroundLayout = holder.backgroundLayout;
         TextView tvRole = holder.tvRole,
-                tvRoleType = holder.tvRoleType;
+                tvDescription = holder.tvDescription;
 
         RoleItem roleItem = roles.get(position);
 
-        tvRole.setText(roleItem.getName());
-        tvRoleType.setText(roleItem.getType());
+        String description = "Level " + roleItem.getLevel() + " • " + roleItem.getType() +
+                (roleItem.isFixed() ? " • Fixed" : "");
 
-        int top = dpToPx(4), bottom = dpToPx(4);
+        tvRole.setText(roleItem.getName());
+        tvDescription.setText(description);
+
+        tvRole.setTextAppearance(R.style.FlatButtonStyle4);
+        tvDescription.setTextAppearance(R.style.TVFontStyle11);
+
+        if (level <= roleItem.getLevel() || roleItem.isFixed()) {
+            tvRole.setTextAppearance(R.style.FlatButtonStyle5);
+            tvDescription.setTextAppearance(R.style.TVFontStyle5);
+        }
+
+        int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position == 0, isLastItem = position == roles.size() - 1;
 
         if (isFirstItem)
-            top = dpToPx(8);
+            top = dpToPx(4);
         if (isLastItem)
-            bottom = dpToPx(8);
+            bottom = dpToPx(4);
 
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
         layoutParams.topMargin = top;
         layoutParams.bottomMargin = bottom;
-        backgroundLayout.setLayoutParams(layoutParams);
+        constraintLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
             if (roleAdapterListener != null)
@@ -79,14 +93,15 @@ public class RoleItemAdapter extends RecyclerView.Adapter<RoleItemAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
-        TextView tvRole, tvRoleType;
+        ConstraintLayout constraintLayout, backgroundLayout;
+        TextView tvRole, tvDescription;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
-            tvRoleType = itemView.findViewById(R.id.tvRoleType);
+            tvDescription = itemView.findViewById(R.id.tvDescription);
             tvRole = itemView.findViewById(R.id.tvRole);
 
             setIsRecyclable(false);
@@ -96,6 +111,10 @@ public class RoleItemAdapter extends RecyclerView.Adapter<RoleItemAdapter.ViewHo
     private int dpToPx(int dp) {
         float px = dp * context.getResources().getDisplayMetrics().density;
         return (int) px;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     RoleAdapterListener roleAdapterListener;

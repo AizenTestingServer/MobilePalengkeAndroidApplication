@@ -49,7 +49,8 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     @Override
     public void onBindViewHolder(@NonNull NotificationAdapter.ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout,
+                backgroundLayout = holder.backgroundLayout;
         ImageView imgAlert = holder.imgAlert;
         TextView tvNotificationTitle = holder.tvNotificationTitle,
                 tvNotificationText = holder.tvNotificationText,
@@ -71,17 +72,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             tvTimestamp.setTextAppearance(R.style.TVFontStyle12);
         }
 
-        int top = dpToPx(4), bottom = dpToPx(4);
+        int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position == 0, isLastItem = position == notifications.size() - 1;
 
-        if (isFirstItem) top = dpToPx(8);
-        if (isLastItem) bottom = dpToPx(8);
+        if (isFirstItem) top = dpToPx(4);
+        if (isLastItem) bottom = dpToPx(4);
 
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
         layoutParams.topMargin = top;
         layoutParams.bottomMargin = bottom;
-        backgroundLayout.setLayoutParams(layoutParams);
+        constraintLayout.setLayoutParams(layoutParams);
 
         backgroundLayout.setOnClickListener(view -> {
             Intent intent = null;
@@ -109,13 +110,14 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         ImageView imgAlert;
         TextView tvNotificationTitle, tvNotificationText, tvTimestamp;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             imgAlert = itemView.findViewById(R.id.imgAlert);
             tvNotificationTitle = itemView.findViewById(R.id.tvNotificationTitle);

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.denzcoskun.imageslider.ImageSlider;
 import com.denzcoskun.imageslider.constants.ScaleTypes;
 import com.denzcoskun.imageslider.models.SlideModel;
@@ -23,7 +24,9 @@ import com.example.mobilepalengke.Activities.ProductDetailsActivity;
 import com.example.mobilepalengke.Activities.ProductsActivity;
 import com.example.mobilepalengke.Adapters.MealPlanCategoryAdapter;
 import com.example.mobilepalengke.Adapters.ProductCategoryAdapter;
+import com.example.mobilepalengke.DataClasses.Chat;
 import com.example.mobilepalengke.DataClasses.MealPlanCategory;
+import com.example.mobilepalengke.DataClasses.NotificationItem;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DataClasses.ProductCategory;
 import com.example.mobilepalengke.DataClasses.Role;
@@ -38,11 +41,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -53,13 +56,13 @@ import androidx.recyclerview.widget.RecyclerView;
 public class HomeFragment extends Fragment {
 
     ImageSlider imageSliderBanner;
-    CardView adminCardView;
+    CardView adminCardView, chatCard, notificationCard;
     ImageView imgNewProd, imgNewProd2, imgNewProd3;
     ImageView imgFeatProd, imgFeatProd2, imgFeatProd3;
     ImageView imgFacebook, imgTwitter, imgInstagram;
     RecyclerView recyclerView, recyclerView2;
     Button btnDashboard, btnViewAll, btnViewAll2, btnViewAll3, btnViewAll4;
-    TextView tvFullName, tvRoles, tvNewProdCaption, tvFeatProdCaption, tvProdCategoryCaption,
+    TextView tvFullName, tvRoles, tvUnReadChat, tvUnReadNotification, tvNewProdCaption, tvFeatProdCaption, tvProdCategoryCaption,
             tvMealPlanCaption, tvNewProd, tvNewProd2, tvNewProd3, tvNewProdPrice, tvNewProdPrice2, tvNewProdPrice3,
             tvFeatProd, tvFeatProd2, tvFeatProd3, tvFeatProdPrice, tvFeatProdPrice2, tvFeatProdPrice3;
 
@@ -75,7 +78,7 @@ public class HomeFragment extends Fragment {
     boolean isListening = true;
 
     Query homeSliderImagesQuery, userQuery, adminRolesQuery, featuredProductsQuery, newProductsQuery,
-            productCategoriesQuery, mealPlanCategoriesQuery;
+            productCategoriesQuery, mealPlanCategoriesQuery, chatListQuery, notificationsQuery;
 
     String uid;
     User user;
@@ -84,6 +87,8 @@ public class HomeFragment extends Fragment {
     List<Product> featuredProducts = new ArrayList<>(), newProducts = new ArrayList<>();
     List<ProductCategory> productCategories = new ArrayList<>();
     List<MealPlanCategory> mealPlanCategories = new ArrayList<>();
+    List<Chat> chatList = new ArrayList<>();
+    List<NotificationItem> notifications = new ArrayList<>();
 
     ProductCategoryAdapter productCategoryAdapter;
     MealPlanCategoryAdapter mealPlanCategoryAdapter;
@@ -99,6 +104,12 @@ public class HomeFragment extends Fragment {
         tvFullName = view.findViewById(R.id.tvFullName);
         tvRoles = view.findViewById(R.id.tvRoles);
         btnDashboard = view.findViewById(R.id.btnDashboard);
+
+        chatCard = view.findViewById(R.id.chatCard);
+        notificationCard = view.findViewById(R.id.notificationCard);
+
+        tvUnReadChat = view.findViewById(R.id.tvUnReadChat);
+        tvUnReadNotification = view.findViewById(R.id.tvUnReadNotification);
 
         imgNewProd = view.findViewById(R.id.imgNewProd);
         imgNewProd2 = view.findViewById(R.id.imgNewProd2);
@@ -152,8 +163,10 @@ public class HomeFragment extends Fragment {
         adminRolesQuery = firebaseDatabase.getReference("roles").child("adminRoles");
         featuredProductsQuery = firebaseDatabase.getReference("products").orderByChild("id");
         newProductsQuery = firebaseDatabase.getReference("products").orderByChild("id");
-        productCategoriesQuery = firebaseDatabase.getReference("productCategories").orderByChild("id");
-        mealPlanCategoriesQuery = firebaseDatabase.getReference("mealPlanCategories").orderByChild("id");
+        productCategoriesQuery = firebaseDatabase.getReference("productCategories").orderByChild("name");
+        mealPlanCategoriesQuery = firebaseDatabase.getReference("mealPlanCategories").orderByChild("name");
+        chatListQuery = firebaseDatabase.getReference("chatList");
+        notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
 
         loadingDialog.showDialog();
         isListening = true;
@@ -287,12 +300,11 @@ public class HomeFragment extends Fragment {
                                 new ArrayList<>();
 
                         String roles = "";
-                        for (String roleId : roleIds)
-                            if (roleId.contains("ar")) {
-                                Role role = snapshot.child(roleId.trim()).getValue(Role.class);
-                                if (role != null)
-                                    roles += "• " + role.getName() + "\n";
-                            }
+                        for (String roleId : roleIds) {
+                            Role role = snapshot.child(roleId.trim()).getValue(Role.class);
+                            if (role != null)
+                                roles += "• " + role.getName() + "\n";
+                        }
 
                         if (roles.trim().length() > 0) {
                             tvRoles.setText(roles.trim());
@@ -338,8 +350,11 @@ public class HomeFragment extends Fragment {
                     Collections.shuffle(featuredProducts);
 
                     if (featuredProducts.size() >= 1) {
-                        Picasso.get().load(featuredProducts.get(0).getImg()).placeholder(R.drawable.ic_image_blue)
-                                .error(R.drawable.ic_broken_image_red).into(imgFeatProd);
+                        try {
+                            Glide.with(context).load(featuredProducts.get(0).getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                    error(R.drawable.ic_broken_image_red).into(imgFeatProd);
+                        } catch (Exception ex) {}
+
                         tvFeatProd.setText(featuredProducts.get(0).getName());
                         tvFeatProdPrice.setText(context.getString(R.string.priceValue, featuredProducts.get(0).getPrice()));
 
@@ -360,8 +375,11 @@ public class HomeFragment extends Fragment {
                         tvFeatProdCaption.setVisibility(View.VISIBLE);
                     }
                     if (featuredProducts.size() >= 2) {
-                        Picasso.get().load(featuredProducts.get(1).getImg()).placeholder(R.drawable.ic_image_blue)
-                                .error(R.drawable.ic_broken_image_red).into(imgFeatProd2);
+                        try {
+                            Glide.with(context).load(featuredProducts.get(1).getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                    error(R.drawable.ic_broken_image_red).into(imgFeatProd2);
+                        } catch (Exception ex) {}
+
                         tvFeatProd2.setText(featuredProducts.get(1).getName());
                         tvFeatProdPrice2.setText(context.getString(R.string.priceValue, featuredProducts.get(1).getPrice()));
 
@@ -380,8 +398,11 @@ public class HomeFragment extends Fragment {
                         tvFeatProdPrice2.setVisibility(View.GONE);
                     }
                     if (featuredProducts.size() >= 3) {
-                        Picasso.get().load(featuredProducts.get(2).getImg()).placeholder(R.drawable.ic_image_blue)
-                                .error(R.drawable.ic_broken_image_red).into(imgFeatProd3);
+                        try {
+                            Glide.with(context).load(featuredProducts.get(2).getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                    error(R.drawable.ic_broken_image_red).into(imgFeatProd3);
+                        } catch (Exception ex) {}
+
                         tvFeatProd3.setText(featuredProducts.get(2).getName());
                         tvFeatProdPrice3.setText(context.getString(R.string.priceValue, featuredProducts.get(2).getPrice()));
 
@@ -435,8 +456,11 @@ public class HomeFragment extends Fragment {
                     Collections.reverse(newProducts);
 
                     if (newProducts.size() >= 1) {
-                        Picasso.get().load(newProducts.get(0).getImg()).placeholder(R.drawable.ic_image_blue)
-                                .error(R.drawable.ic_broken_image_red).into(imgNewProd);
+                        try {
+                            Glide.with(context).load(newProducts.get(0).getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                    error(R.drawable.ic_broken_image_red).into(imgNewProd);
+                        } catch (Exception ex) {}
+
                         tvNewProd.setText(newProducts.get(0).getName());
                         tvNewProdPrice.setText(context.getString(R.string.priceValue, newProducts.get(0).getPrice()));
 
@@ -457,8 +481,10 @@ public class HomeFragment extends Fragment {
                         tvNewProdCaption.setVisibility(View.VISIBLE);
                     }
                     if (newProducts.size() >= 2) {
-                        Picasso.get().load(newProducts.get(1).getImg()).placeholder(R.drawable.ic_image_blue)
-                                .error(R.drawable.ic_broken_image_red).into(imgNewProd2);
+                        try {
+                            Glide.with(context).load(newProducts.get(1).getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                    error(R.drawable.ic_broken_image_red).into(imgNewProd2);
+                        } catch (Exception ex) {}
                         tvNewProd2.setText(newProducts.get(1).getName());
                         tvNewProdPrice2.setText(context.getString(R.string.priceValue, newProducts.get(1).getPrice()));
 
@@ -477,8 +503,11 @@ public class HomeFragment extends Fragment {
                         tvNewProdPrice2.setVisibility(View.GONE);
                     }
                     if (newProducts.size() >= 3) {
-                        Picasso.get().load(newProducts.get(2).getImg()).placeholder(R.drawable.ic_image_blue)
-                                .error(R.drawable.ic_broken_image_red).into(imgNewProd3);
+                        try {
+                            Glide.with(context).load(newProducts.get(2).getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                    error(R.drawable.ic_broken_image_red).into(imgNewProd3);
+                        } catch (Exception ex) {}
+
                         tvNewProd3.setText(newProducts.get(2).getName());
                         tvNewProdPrice3.setText(context.getString(R.string.priceValue, newProducts.get(2).getPrice()));
 
@@ -524,7 +553,7 @@ public class HomeFragment extends Fragment {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             ProductCategory productCategory = dataSnapshot.getValue(ProductCategory.class);
-                            if (productCategory != null)
+                            if (productCategory != null && !productCategory.isDeactivated())
                                 productCategories.add(productCategory);
                         }
                     }
@@ -570,7 +599,7 @@ public class HomeFragment extends Fragment {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             MealPlanCategory mealPlanCategory = dataSnapshot.getValue(MealPlanCategory.class);
-                            if (mealPlanCategory != null)
+                            if (mealPlanCategory != null && !mealPlanCategory.isDeactivated())
                                 mealPlanCategories.add(mealPlanCategory);
                         }
                     }
@@ -589,7 +618,7 @@ public class HomeFragment extends Fragment {
 
                     mealPlanCategoryAdapter.notifyDataSetChanged();
 
-                    loadingDialog.dismissDialog();
+                    chatListQuery.addValueEventListener(getChatListValueListener());
                 }
             }
 
@@ -605,10 +634,94 @@ public class HomeFragment extends Fragment {
         };
     }
 
+    private ValueEventListener getChatListValueListener() {
+        return new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    chatList.clear();
+
+                    if (snapshot.exists()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Chat chat = dataSnapshot.getValue(Chat.class);
+                            if (chat != null) {
+                                List<String> participantsId = chat.getParticipants() != null ?
+                                        new ArrayList<>(chat.getParticipants().values()) :
+                                        new ArrayList<>();
+
+                                if (participantsId.contains(uid) && chat.getIsRead() != null)
+                                    for (Map.Entry<String, Boolean> mapIsRead : chat.getIsRead().entrySet())
+                                        if (mapIsRead.getKey().equals(uid))
+                                            if (!mapIsRead.getValue()) {
+                                                chatList.add(chat);
+                                                break;
+                                            }
+                            }
+                        }
+                    }
+
+                    if (chatList.size() > 0) chatCard.setVisibility(View.VISIBLE);
+                    else chatCard.setVisibility(View.GONE);
+                    tvUnReadChat.setText(getString(R.string.chatValue, chatList.size(),
+                            (chatList.size() > 1 ? "s" : "")));
+
+                    notificationsQuery.addValueEventListener(getNotificationValueListener());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "chatListQuery:onCancelled", error.toException());
+                loadingDialog.dismissDialog();
+
+                messageDialog.setTextCaption("Failed to get the chat list.");
+                messageDialog.setTextType(2);
+                messageDialog.showDialog();
+            }
+        };
+    }
+
+    private ValueEventListener getNotificationValueListener() {
+        return new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    notifications.clear();
+
+                    if (snapshot.exists()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            NotificationItem notification = dataSnapshot.getValue(NotificationItem.class);
+                            if (notification != null && !notification.isRead()) notifications.add(notification);
+                        }
+                    }
+
+                    if (notifications.size() > 0) notificationCard.setVisibility(View.VISIBLE);
+                    else notificationCard.setVisibility(View.GONE);
+                    tvUnReadNotification.setText(getString(R.string.notifValue, notifications.size(),
+                            (notifications.size() > 1 ? "s" : "")));
+
+                    loadingDialog.dismissDialog();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "notificationsQuery:onCancelled", error.toException());
+                loadingDialog.dismissDialog();
+
+                messageDialog.setTextCaption("Failed to get the notifications.");
+                messageDialog.setTextType(2);
+                messageDialog.showDialog();
+            }
+        };
+    }
+
     @Override
     public void onResume() {
         isListening = true;
-        homeSliderImagesQuery.addValueEventListener(getHSImagesValueListener());
+        homeSliderImagesQuery.addListenerForSingleValueEvent(getHSImagesValueListener());
 
         super.onResume();
     }

@@ -18,15 +18,14 @@ import androidx.core.content.ContextCompat;
 
 public class ChangeNameDialog {
 
-    TextView tvErrorCaption;
-    EditText etLastName, etFirstName;
-    Button btnConfirm, btnCancel;
+    private TextView tvErrorCaption;
+    private EditText etLastName, etFirstName;
 
-    String lastName, firstName;
+    private final Context context;
+    private final Activity activity;
+    private Dialog dialog;
 
-    Context context;
-    Activity activity;
-    Dialog dialog;
+    private String lastName, firstName;
 
     public ChangeNameDialog(Context context) {
         this.context = context;
@@ -45,13 +44,12 @@ public class ChangeNameDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_change_name_layout);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
 
         tvErrorCaption = dialog.findViewById(R.id.tvErrorCaption);
         etLastName = dialog.findViewById(R.id.etLastName);
         etFirstName = dialog.findViewById(R.id.etFirstName);
-        btnConfirm = dialog.findViewById(R.id.btnConfirm);
-        btnCancel = dialog.findViewById(R.id.btnCancel);
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
         etLastName.addTextChangedListener(new TextWatcher() {
             @Override

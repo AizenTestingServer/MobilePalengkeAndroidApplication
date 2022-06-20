@@ -1,6 +1,7 @@
 package com.example.mobilepalengke.Fragments;
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -59,7 +60,7 @@ public class MoreFragment extends Fragment {
     Query userQuery;
 
     String uid, fullName;
-    User user;
+    User currentUser;
 
     List<IconOption> moreIconOptions;
 
@@ -85,7 +86,7 @@ public class MoreFragment extends Fragment {
             uid = firebaseUser.getUid();
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        userQuery = firebaseDatabase.getReference("users").orderByChild("id").equalTo(uid);
+        userQuery = firebaseDatabase.getReference("users").child(uid);
 
         loadingDialog.showDialog();
         isListening = true;
@@ -158,6 +159,10 @@ public class MoreFragment extends Fragment {
                 startActivity(intent);
                 ((Activity) context).finishAffinity();
 
+                NotificationManager notificationManager = (NotificationManager)
+                        context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancelAll();
+
                 loadingDialog.dismissDialog();
 
                 Toast.makeText(
@@ -175,15 +180,13 @@ public class MoreFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
-                    if (snapshot.exists())
-                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                            user = dataSnapshot.getValue(User.class);
-                            if (user != null) {
-                                fullName = user.getFirstName() + " " + user.getLastName();
-                                tvFullName.setText(fullName);
-                                break;
-                            }
+                    if (snapshot.exists()) {
+                        currentUser = snapshot.getValue(User.class);
+                        if (currentUser != null) {
+                            fullName = currentUser.getFirstName() + " " + currentUser.getLastName();
+                            tvFullName.setText(fullName);
                         }
+                    }
 
                     loadingDialog.dismissDialog();
                 }
@@ -194,7 +197,7 @@ public class MoreFragment extends Fragment {
                 Log.e("TAG: " + context.getClass(), "userQuery:onCancelled", error.toException());
                 loadingDialog.dismissDialog();
 
-                messageDialog.setTextCaption("Failed to get the user's data.");
+                messageDialog.setTextCaption("Failed to get the currentUser's data.");
                 messageDialog.setTextType(2);
                 messageDialog.showDialog();
             }
@@ -204,7 +207,7 @@ public class MoreFragment extends Fragment {
     @Override
     public void onResume() {
         isListening = true;
-        userQuery.addValueEventListener(getUserValueListener());
+        userQuery.addListenerForSingleValueEvent(getUserValueListener());
 
         super.onResume();
     }

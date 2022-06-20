@@ -19,7 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 
 public class AdminActivity extends AppCompatActivity {
 
-    TextView appNavTextView;
+    TextView tvAppNav;
 
     BottomNavigationView bottomNavigationView;
     NavHostFragment navHostFragment;
@@ -38,7 +38,7 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        appNavTextView = findViewById(R.id.appNavTextView);
+        tvAppNav = findViewById(R.id.tvAppNav);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         navHostFragment = (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentContainerView);
@@ -59,9 +59,13 @@ public class AdminActivity extends AppCompatActivity {
 
         navController.addOnDestinationChangedListener((controller, destination, arguments) -> {
             if (bottomNavigationView.getSelectedItemId() == R.id.dashboardFragment) {
-                appNavTextView.setText(getString(R.string.dashboard));
+                tvAppNav.setText(getString(R.string.dashboard));
+            } else if (bottomNavigationView.getSelectedItemId() == R.id.chatListFragment) {
+                tvAppNav.setText(getString(R.string.chatList));
+            } else if (bottomNavigationView.getSelectedItemId() == R.id.notificationFragment) {
+                tvAppNav.setText(getString(R.string.notifications));
             } else {
-                appNavTextView.setText(getString(R.string.more));
+                tvAppNav.setText(getString(R.string.more));
             }
         });
     }

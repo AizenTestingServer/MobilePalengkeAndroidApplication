@@ -40,7 +40,7 @@ public class IconOptionAdapter extends RecyclerView.Adapter<IconOptionAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout;
         TextView tvIconLabel = holder.tvIconLabel;
 
         IconOption iconOption = iconOptions.get(position);
@@ -54,19 +54,19 @@ public class IconOptionAdapter extends RecyclerView.Adapter<IconOptionAdapter.Vi
             tvIconLabel.setCompoundDrawablesWithIntrinsicBounds(
                     null, null, null, null);
 
-        int top = dpToPx(4), bottom = dpToPx(4);
+        int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position == 0, isLastItem = position == iconOptions.size() - 1;
 
         if (isFirstItem)
-            top = dpToPx(8);
+            top = dpToPx(4);
         if (isLastItem)
-            bottom = dpToPx(8);
+            bottom = dpToPx(4);
 
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
         layoutParams.topMargin = top;
         layoutParams.bottomMargin = bottom;
-        backgroundLayout.setLayoutParams(layoutParams);
+        constraintLayout.setLayoutParams(layoutParams);
 
         tvIconLabel.setOnClickListener(view -> {
             if (iconOptionAdapterListener != null) {
@@ -82,13 +82,13 @@ public class IconOptionAdapter extends RecyclerView.Adapter<IconOptionAdapter.Vi
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         TextView tvIconLabel;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             tvIconLabel = itemView.findViewById(R.id.tvIconLabel);
 
             setIsRecyclable(false);
@@ -104,7 +104,6 @@ public class IconOptionAdapter extends RecyclerView.Adapter<IconOptionAdapter.Vi
 
     public interface IconOptionAdapterListener {
         void onClick(IconOption iconOption);
-
         void onClick(IconOption iconOption, int position);
     }
 

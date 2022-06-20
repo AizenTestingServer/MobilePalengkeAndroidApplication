@@ -83,7 +83,7 @@ public class MealPlanCategoriesActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             MealPlanCategory mealPlanCategory = dataSnapshot.getValue(MealPlanCategory.class);
-                            if (mealPlanCategory != null)
+                            if (mealPlanCategory != null && !mealPlanCategory.isDeactivated())
                                 mealPlanCategories.add(mealPlanCategory);
                         }
                     }
@@ -113,7 +113,7 @@ public class MealPlanCategoriesActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        mealPlanCategoriesQuery.addValueEventListener(getMealPlanCatValueListener());
+        mealPlanCategoriesQuery.addListenerForSingleValueEvent(getMealPlanCatValueListener());
 
         super.onResume();
     }

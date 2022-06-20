@@ -7,6 +7,16 @@
         android:title="@string/dashboard" />
 
     <item
+        android:id="@+id/chatListFragment"
+        android:icon="@drawable/ic_baseline_chat_bubble_24"
+        android:title="@string/chatList" />
+
+    <item
+        android:id="@+id/notificationFragment"
+        android:icon="@drawable/ic_baseline_notifications_24"
+        android:title="@string/notifications" />
+
+    <item
         android:id="@+id/moreFragment"
         android:icon="@drawable/ic_baseline_more_horiz_24"
         android:title="@string/more" />

@@ -73,7 +73,7 @@ public class NotificationFragment extends Fragment {
             uid = firebaseUser.getUid();
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
+        notificationsQuery = firebaseDatabase.getReference("notifications").child(uid).orderByChild("timestamp");
 
         loadingDialog.showDialog();
         isListening = true;

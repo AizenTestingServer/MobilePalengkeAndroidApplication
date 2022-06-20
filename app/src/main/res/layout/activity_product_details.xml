@@ -23,9 +23,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/constraintLayout10"
-                app:layout_constraintStart_toStartOf="@+id/constraintLayout10"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout10">
+                app:layout_constraintEnd_toEndOf="@+id/constraintLayout"
+                app:layout_constraintStart_toStartOf="@+id/constraintLayout"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
                 <TextView
                     android:id="@+id/tvProductCaption"
@@ -68,7 +68,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout10"
+                android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -79,58 +79,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <Button
-                    android:id="@+id/btnAddToCart"
-                    style="@style/MaterialBtnStyle.Button1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@string/btnAddToCart"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnAddQty"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/btnAddQty"
-                    app:layout_constraintTop_toTopOf="@+id/btnAddQty" />
-
-                <ImageButton
-                    android:id="@+id/btnAddQty"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:background="@drawable/custom_end_corner_radius_button_ripple_background"
-                    android:contentDescription="@string/addSymbol"
-                    android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnSubtractQty"
-                    app:layout_constraintStart_toEndOf="@+id/tvQty"
-                    app:layout_constraintTop_toTopOf="@+id/btnSubtractQty"
-                    app:srcCompat="@drawable/ic_baseline_add_24"
-                    app:tint="@color/mp_yellow"
-                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
-
-                <ImageButton
-                    android:id="@+id/btnSubtractQty"
-                    style="@style/Widget.MaterialComponents.Button"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:background="@drawable/custom_start_corner_radius_button_ripple_background"
-                    android:contentDescription="@string/subtractSymbol"
-                    android:padding="8dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvDescription"
-                    app:srcCompat="@drawable/ic_baseline_remove_24"
-                    app:tint="@color/mp_yellow"
-                    tools:ignore="TouchTargetSizeCheck" />
-
                 <ImageView
                     android:id="@+id/imgProduct"
                     android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
                     android:contentDescription="@string/viewAllProdCat"
                     app:layout_constraintDimensionRatio="H,1:1"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -138,78 +90,168 @@
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_image_blue" />
 
-                <TextView
-                    android:id="@+id/textView"
-                    style="@style/TVFontStyle4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/productCategories"
-                    app:layout_constraintStart_toStartOf="@+id/btnSubtractQty"
-                    app:layout_constraintTop_toBottomOf="@+id/btnAddToCart" />
-
-                <TextView
-                    android:id="@+id/tvQty"
-                    style="@style/TVFontStyle1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:minWidth="64dp"
-                    android:text="@string/qtyText"
-                    android:textAlignment="center"
-                    app:layout_constraintBottom_toBottomOf="@+id/btnSubtractQty"
-                    app:layout_constraintStart_toEndOf="@+id/btnSubtractQty"
-                    app:layout_constraintTop_toTopOf="@+id/btnSubtractQty"
-                    tools:ignore="KeyboardInaccessibleWidget" />
-
-                <TextView
-                    android:id="@+id/tvDescription"
-                    style="@style/TVFontStyle11"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/productDesc"
-                    android:textSize="16sp"
-                    app:layout_constraintEnd_toEndOf="@+id/tvPrice"
-                    app:layout_constraintStart_toStartOf="@+id/tvPrice"
-                    app:layout_constraintTop_toBottomOf="@+id/tvPrice"
-                    tools:ignore="TextContrastCheck" />
-
-                <TextView
-                    android:id="@+id/tvLabel"
-                    style="@style/TVFontStyle8"
-                    android:layout_width="0dp"
-                    android:text="@string/productName"
-                    android:textSize="20sp"
-                    app:layout_constraintEnd_toEndOf="@+id/imgProduct"
-                    app:layout_constraintStart_toStartOf="@+id/imgProduct"
-                    app:layout_constraintTop_toBottomOf="@+id/imgProduct"
-                    tools:ignore="TextContrastCheck" />
-
-                <TextView
-                    android:id="@+id/tvPrice"
-                    style="@style/TVFontStyle3"
-                    android:layout_width="0dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/priceText"
-                    android:textAlignment="textStart"
-                    android:textSize="18sp"
-                    app:layout_constraintEnd_toEndOf="@+id/tvLabel"
-                    app:layout_constraintStart_toStartOf="@+id/tvLabel"
-                    app:layout_constraintTop_toBottomOf="@+id/tvLabel"
-                    tools:ignore="TextContrastCheck" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@id/constraintLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:layout_marginTop="-20dp"
+                    android:background="@drawable/bg_blue_corner"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+                    app:layout_constraintTop_toBottomOf="@+id/imgProduct">
 
+                    <TextView
+                        android:id="@+id/textView"
+                        style="@style/TVFontStyle1"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/productCategories"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toStartOf="@+id/constraintLayout4"
+                        app:layout_constraintStart_toStartOf="@+id/constraintLayout3"
+                        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@id/constraintLayout4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp"
+                        android:layout_marginBottom="24dp"
+                        android:background="@drawable/bg_yellow_corner"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/constraintLayout3"
+                        app:layout_constraintTop_toTopOf="@+id/textView">
+
+                        <Button
+                            android:id="@+id/btnAddToCart"
+                            style="@style/MaterialBtnStyle.Button1"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/btnAddToCart"
+                            app:cornerRadius="30dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/btnAddQty"
+                            app:layout_constraintStart_toStartOf="@+id/btnSubtractQty"
+                            app:layout_constraintTop_toBottomOf="@+id/btnAddQty" />
+
+                        <ImageButton
+                            android:id="@+id/btnAddQty"
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/custom_end_corner_radius_button_ripple_background"
+                            android:contentDescription="@string/addSymbol"
+                            android:padding="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:srcCompat="@drawable/ic_baseline_add_24"
+                            app:tint="@color/mp_yellow"
+                            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+                        <ImageButton
+                            android:id="@+id/btnSubtractQty"
+                            style="@style/Widget.MaterialComponents.Button"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/custom_start_corner_radius_button_ripple_background"
+                            android:contentDescription="@string/subtractSymbol"
+                            android:padding="8dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/btnAddQty"
+                            app:layout_constraintEnd_toStartOf="@+id/tvQty"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/btnAddQty"
+                            app:srcCompat="@drawable/ic_baseline_remove_24"
+                            app:tint="@color/mp_yellow"
+                            tools:ignore="TouchTargetSizeCheck" />
+
+                        <TextView
+                            android:id="@+id/tvQty"
+                            style="@style/TVFontStyle14"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:minWidth="64dp"
+                            android:text="@string/qtyText"
+                            android:textAlignment="center"
+                            app:layout_constraintBottom_toBottomOf="@+id/btnAddQty"
+                            app:layout_constraintEnd_toStartOf="@+id/btnAddQty"
+                            app:layout_constraintTop_toTopOf="@+id/btnAddQty"
+                            tools:ignore="KeyboardInaccessibleWidget" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@id/constraintLayout3"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/bg_white_corner"
+                        android:paddingBottom="16dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TextView
+                            android:id="@+id/tvDescription"
+                            style="@style/TVFontStyle11"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="@string/productDesc"
+                            android:textSize="16sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="@+id/tvPrice"
+                            app:layout_constraintStart_toStartOf="@+id/tvLabel"
+                            app:layout_constraintTop_toBottomOf="@+id/tvLabel"
+                            tools:ignore="TextContrastCheck" />
+
+                        <TextView
+                            android:id="@+id/tvLabel"
+                            style="@style/TVFontStyle1"
+                            android:layout_width="0dp"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/productName"
+                            android:textSize="20sp"
+                            app:layout_constraintEnd_toStartOf="@+id/tvPrice"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="TextContrastCheck" />
+
+                        <TextView
+                            android:id="@+id/tvPrice"
+                            style="@style/TVFontStyle3"
+                            android:layout_width="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:text="@string/priceText"
+                            android:textAlignment="textStart"
+                            android:textSize="20sp"
+                            app:layout_constraintBottom_toBottomOf="@+id/tvLabel"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/tvLabel"
+                            tools:ignore="TextContrastCheck" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_marginBottom="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="@+id/textView"
+                        app:layout_constraintStart_toStartOf="@+id/textView"
+                        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -233,7 +275,7 @@
             android:gravity="center_horizontal|center_vertical"
             android:padding="4dp"
             android:text="@string/notificationCountValue"
-            android:textColor="@color/mp_black_regular"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/cartIconImage"
@@ -274,16 +316,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/appNavTextView"
-            style="@style/TVFontStyle1"
+            android:id="@+id/tvAppNav"
+            style="@style/TVFontStyle2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/productDetails"
+            android:textAlignment="center"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cartIconImage"
-            app:layout_constraintStart_toEndOf="@+id/imgAppIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

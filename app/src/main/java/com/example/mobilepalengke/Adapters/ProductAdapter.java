@@ -10,10 +10,10 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.Activities.ProductDetailsActivity;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -47,7 +47,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ProductAdapter.ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout,
+                backgroundLayout = holder.backgroundLayout;
         ImageView imgProduct = holder.imgProduct;
         ImageButton btnSubtractQty = holder.btnSubtractQty,
                 btnAddQty = holder.btnAddQty;
@@ -63,8 +64,30 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         tvLabel.setText(product.getName());
         tvPrice.setText(context.getString(R.string.priceValue, product.getPrice()));
-        Picasso.get().load(product.getImg()).placeholder(R.drawable.ic_image_blue)
-                .error(R.drawable.ic_broken_image_red).into(imgProduct);
+
+        try {
+            Glide.with(context).load(product.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                    error(R.drawable.ic_broken_image_red).into(imgProduct);
+        } catch (Exception ex) {}
+
+        int start = dpToPx(0), end = dpToPx(0), top = dpToPx(0), bottom = dpToPx(0);
+
+        boolean isFirstColumn = (position + 1) % 2 == 1, isLastColumn = (position + 1) % 2 == 0;
+        int lastRowFirstItem = products.size() % 2 == 0 ? products.size() - 1 : products.size();
+        boolean isFirstRow = position + 1 <= 2, isLastRow = position + 1 >= lastRowFirstItem;
+
+        if (isFirstColumn) start = dpToPx(4);
+        if (isLastColumn) end = dpToPx(4);
+        if (isFirstRow) top = dpToPx(4);
+        if (isLastRow) bottom = dpToPx(4);
+
+        ConstraintLayout.LayoutParams layoutParams =
+                (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
+        layoutParams.setMarginStart(start);
+        layoutParams.setMarginEnd(end);
+        layoutParams.topMargin = top;
+        layoutParams.bottomMargin = bottom;
+        constraintLayout.setLayoutParams(layoutParams);
 
         btnSubtractQty.setOnClickListener(view -> {
             quantity = Integer.parseInt(tvQty.getText().toString());
@@ -94,6 +117,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
             quantity = 1;
             tvQty.setText(context.getString(R.string.qtyValue, quantity));
+
+            btnSubtractQty.setEnabled(quantity > 1);
         });
 
         backgroundLayout.setOnClickListener(view -> {
@@ -109,7 +134,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         ImageView imgProduct;
         ImageButton btnSubtractQty, btnAddQty;
         Button btnAddToCart;
@@ -118,6 +143,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             imgProduct = itemView.findViewById(R.id.imgProduct);
             btnSubtractQty = itemView.findViewById(R.id.btnSubtractQty);
@@ -126,7 +152,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
             tvLabel = itemView.findViewById(R.id.tvLabel);
             tvPrice = itemView.findViewById(R.id.tvPrice);
             tvQty = itemView.findViewById(R.id.tvQty);
+
+            setIsRecyclable(false);
         }
+    }
+
+    private int dpToPx(int dp) {
+        float px = dp * context.getResources().getDisplayMetrics().density;
+        return (int) px;
     }
 
     ProductAdapterListener productAdapterListener;

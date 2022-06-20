@@ -12,7 +12,8 @@ public class Product {
     public Product() {
     }
 
-    public Product(String id, String name, String img, Map<String, String> categories, Map<String, String> descriptions, double price) {
+    public Product(String id, String name, String img, Map<String, String> categories,
+                   Map<String, String> descriptions, double price) {
         this.id = id;
         this.name = name;
         this.img = img;
@@ -47,5 +48,9 @@ public class Product {
 
     public double getPrice() {
         return price;
+    }
+
+    public void setDeactivated(boolean deactivated) {
+        this.deactivated = deactivated;
     }
 }

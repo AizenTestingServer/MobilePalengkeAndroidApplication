@@ -15,5 +15,15 @@
         android:name="com.example.mobilepalengke.Fragments.MoreFragment"
         android:label="fragment_more"
         tools:layout="@layout/fragment_more" />
+    <fragment
+        android:id="@+id/chatListFragment"
+        android:name="com.example.mobilepalengke.Fragments.ChatListFragment"
+        android:label="fragment_chat_list"
+        tools:layout="@layout/fragment_chat_list" />
+    <fragment
+        android:id="@+id/notificationFragment"
+        android:name="com.example.mobilepalengke.Fragments.NotificationFragment"
+        android:label="fragment_notification"
+        tools:layout="@layout/fragment_notification" />
 
 </navigation>

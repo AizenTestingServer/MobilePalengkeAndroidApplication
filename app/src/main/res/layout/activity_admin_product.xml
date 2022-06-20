@@ -34,16 +34,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/appNavTextView"
-            style="@style/TVFontStyle1"
+            android:id="@+id/tvAppNav"
+            style="@style/TVFontStyle2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/products"
+            android:textAlignment="center"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imgAppIcon"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -124,7 +126,7 @@
 
             <TextView
                 android:id="@+id/btnChangeCategory"
-                style="@style/MaterialBtnStyle.Button2"
+                style="@style/FlatButtonStyle3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"

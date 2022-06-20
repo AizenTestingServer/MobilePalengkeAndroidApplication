@@ -83,7 +83,7 @@ public class ProductCategoriesActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             ProductCategory productCategory = dataSnapshot.getValue(ProductCategory.class);
-                            if (productCategory != null)
+                            if (productCategory != null && !productCategory.isDeactivated())
                                 productCategories.add(productCategory);
                         }
                     }
@@ -115,7 +115,7 @@ public class ProductCategoriesActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        productCategoriesQuery.addValueEventListener(getProdCatValueListener());
+        productCategoriesQuery.addListenerForSingleValueEvent(getProdCatValueListener());
 
         super.onResume();
     }

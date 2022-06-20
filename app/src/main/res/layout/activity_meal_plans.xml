@@ -56,7 +56,7 @@
             android:gravity="center_horizontal|center_vertical"
             android:padding="4dp"
             android:text="@string/notificationCountValue"
-            android:textColor="@color/mp_black_regular"
+            android:textColor="@color/white"
             android:textStyle="bold"
             android:visibility="gone"
             app:layout_constraintBottom_toTopOf="@+id/cartIconImage"
@@ -66,16 +66,18 @@
             tools:ignore="TextContrastCheck" />
 
         <TextView
-            android:id="@+id/appNavTextView"
-            style="@style/TVFontStyle1"
+            android:id="@+id/tvAppNav"
+            style="@style/TVFontStyle2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:text="@string/mealPlans"
+            android:textAlignment="center"
+            android:textSize="22sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cartIconImage"
-            app:layout_constraintStart_toEndOf="@+id/imgAppIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -131,7 +133,7 @@
 
             <TextView
                 android:id="@+id/btnChangeCategory"
-                style="@style/MaterialBtnStyle.Button2"
+                style="@style/FlatButtonStyle3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"

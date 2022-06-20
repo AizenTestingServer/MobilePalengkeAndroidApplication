@@ -121,7 +121,7 @@ public class ProductsActivity extends AppCompatActivity {
         selectedCategoryId = getIntent().getStringExtra("selectedCategoryId");
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        productsQuery = firebaseDatabase.getReference("products").orderByChild("id");
+        productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
         productCategoriesQuery = firebaseDatabase.getReference("productCategories").orderByChild("name");
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid);
 
@@ -254,21 +254,13 @@ public class ProductsActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Product product = dataSnapshot.getValue(Product.class);
-                            if (product != null)
+                            if (product != null && !product.isDeactivated())
                                 products.add(product);
                         }
                     }
 
-                    if (products.size() == 0)
-                        tvProductCaption.setVisibility(View.VISIBLE);
-                    else
-                        tvProductCaption.setVisibility(View.GONE);
-                    tvProductCaption.bringToFront();
-
-                    productAdapter.notifyDataSetChanged();
+                    productCategoriesQuery.addValueEventListener(getProdCatValueListener());
                 }
-
-                productCategoriesQuery.addValueEventListener(getProdCatValueListener());
             }
 
             @Override
@@ -289,6 +281,7 @@ public class ProductsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
+                    productsCategories.clear();
                     productCategories.clear();
                     productCategoriesId.clear();
 
@@ -395,6 +388,7 @@ public class ProductsActivity extends AppCompatActivity {
         List<String> productsCategoriesTemp = new ArrayList<>(productsCategoriesCopy);
 
         products.clear();
+        productsCategories.clear();
 
         for (int i = 0; i < productsTemp.size(); i++) {
             List<String> categoriesId = productsTemp.get(i).getCategories() != null ?
@@ -434,10 +428,15 @@ public class ProductsActivity extends AppCompatActivity {
         }
     }
 
+    boolean isStopped = false;
+
     @Override
     public void onResume() {
-        isListening = true;
-        productsQuery.addValueEventListener(getProdCatValueListener());
+        if (isStopped) {
+            isListening = true;
+            productsQuery.addListenerForSingleValueEvent(getProdValueListener());
+            isStopped = false;
+        }
 
         super.onResume();
     }
@@ -445,6 +444,7 @@ public class ProductsActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         isListening = false;
+        isStopped = true;
 
         super.onStop();
     }
@@ -452,6 +452,7 @@ public class ProductsActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         isListening = false;
+        isStopped = true;
 
         super.onDestroy();
     }

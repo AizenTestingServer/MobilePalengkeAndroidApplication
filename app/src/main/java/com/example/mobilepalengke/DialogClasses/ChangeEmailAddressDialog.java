@@ -19,15 +19,14 @@ import androidx.core.content.ContextCompat;
 
 public class ChangeEmailAddressDialog {
 
-    TextView tvErrorCaption;
-    EditText etEmail;
-    Button btnConfirm, btnCancel;
+    private TextView tvErrorCaption;
+    private EditText etEmail;
 
-    String emailAddress;
+    private final Context context;
+    private final Activity activity;
+    private Dialog dialog;
 
-    Context context;
-    Activity activity;
-    Dialog dialog;
+    private String emailAddress;
 
     public ChangeEmailAddressDialog(Context context) {
         this.context = context;
@@ -46,12 +45,11 @@ public class ChangeEmailAddressDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_change_email_address_layout);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
 
         tvErrorCaption = dialog.findViewById(R.id.tvErrorCaption);
         etEmail = dialog.findViewById(R.id.etEmail);
-        btnConfirm = dialog.findViewById(R.id.btnConfirm);
-        btnCancel = dialog.findViewById(R.id.btnCancel);
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override

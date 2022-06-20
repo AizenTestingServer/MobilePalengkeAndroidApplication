@@ -12,8 +12,9 @@ public class NotificationItem {
     public NotificationItem() {
     }
 
-    public NotificationItem(String id, String description, String title, String value, String timestamp,
-                            String activity, int category, int visibility, int importance,
+    public NotificationItem(String id, String description, String title, String value,
+                            String timestamp, String activity, int category, int visibility,
+                            int importance, boolean read, boolean notified,
                             Map<String, String> attributes) {
         this.id = id;
         this.description = description;
@@ -24,6 +25,8 @@ public class NotificationItem {
         this.category = category;
         this.visibility = visibility;
         this.importance = importance;
+        this.read = read;
+        this.notified = notified;
         this.attributes = attributes;
     }
 

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.Activities.ProductDetailsActivity;
 import com.example.mobilepalengke.DataClasses.CartProduct;
 import com.example.mobilepalengke.DataClasses.CheckOutProduct;
@@ -22,7 +23,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -81,7 +81,7 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout;
         TextView tvProductName = holder.tvProductName,
                 tvPrice = holder.tvPrice,
                 tvQty = holder.tvQty;
@@ -97,25 +97,28 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
         quantity = cartProduct.getQuantity();
         btnSubtractQty.setEnabled(quantity > 1);
 
-        Picasso.get().load(product.getImg()).placeholder(R.drawable.ic_image_blue)
-                .error(R.drawable.ic_broken_image_red).into(imgProduct);
+        try {
+            Glide.with(context).load(product.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                    error(R.drawable.ic_broken_image_red).into(imgProduct);
+        } catch (Exception ex) {}
+
         tvProductName.setText(product.getName());
         tvPrice.setText(context.getString(R.string.priceValue, product.getPrice()));
         tvQty.setText(context.getString(R.string.qtyValue, quantity));
 
-        int top = dpToPx(4), bottom = dpToPx(4);
+        int top = dpToPx(0), bottom = dpToPx(0);
 
         boolean isFirstItem = position + 1 == 1, isLastItem = position + 1 == cartProducts.size();
 
         if (isFirstItem)
-            top = dpToPx(8);
+            top = dpToPx(4);
         if (isLastItem)
-            bottom = dpToPx(8);
+            bottom = dpToPx(4);
 
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
+        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
         layoutParams.topMargin = top;
         layoutParams.bottomMargin = bottom;
-        backgroundLayout.setLayoutParams(layoutParams);
+        constraintLayout.setLayoutParams(layoutParams);
 
         if (adapterListener != null)
             adapterListener.updateCheckOutInfo(checkOutProducts);
@@ -189,8 +192,7 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         TextView tvProductName, tvPrice, tvQty;
         ImageView imgProduct;
         ImageButton btnSubtractQty, btnAddQty;
@@ -199,7 +201,8 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-
+            
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             tvProductName = itemView.findViewById(R.id.tvProductName);
             imgProduct = itemView.findViewById(R.id.imgProduct);
@@ -222,13 +225,13 @@ public class CartProductAdapter extends RecyclerView.Adapter<CartProductAdapter.
             if (task.isSuccessful()) {
                 Toast.makeText(
                         context,
-                        "Successfully removed from cart",
+                        "Successfully removed from cart.",
                         Toast.LENGTH_LONG).show();
                 removeProductFromCheckOut(productId);
             } else
                 Toast.makeText(
                         context,
-                        "Failed to remove the product from cart",
+                        "Failed to remove the product from cart.",
                         Toast.LENGTH_LONG).show();
 
             loadingDialog.dismissDialog();

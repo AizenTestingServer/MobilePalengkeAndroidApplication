@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.mobilepalengke.Activities.ProductsActivity;
 import com.example.mobilepalengke.DataClasses.ProductCategory;
@@ -17,8 +17,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ProductCategoryHorizontalAdapter
-        extends RecyclerView.Adapter<ProductCategoryHorizontalAdapter.ViewHolder> {
+public class ProductCategoryButtonAdapter
+        extends RecyclerView.Adapter<ProductCategoryButtonAdapter.ViewHolder> {
 
     LayoutInflater layoutInflater;
 
@@ -26,7 +26,7 @@ public class ProductCategoryHorizontalAdapter
 
     List<ProductCategory> productCategories;
 
-    public ProductCategoryHorizontalAdapter(Context context, List<ProductCategory> productCategories) {
+    public ProductCategoryButtonAdapter(Context context, List<ProductCategory> productCategories) {
         this.productCategories = productCategories;
         this.layoutInflater = LayoutInflater.from(context);
 
@@ -36,31 +36,31 @@ public class ProductCategoryHorizontalAdapter
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.custom_product_category_horizontal_layout, parent, false);
+        View view = layoutInflater.inflate(R.layout.custom_product_category_button_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ConstraintLayout backgroundLayout = holder.backgroundLayout;
-        Button btnCategory = holder.btnCategory;
+        TextView btnCategory = holder.btnCategory;
 
         ProductCategory productCategory = productCategories.get(position);
 
         btnCategory.setText(productCategory.getName());
 
-        int start = dpToPx(4), end = dpToPx(4);
+        int top = dpToPx(2), bottom = dpToPx(2);
 
         boolean isFirstItem = position == 0, isLastItem = position == productCategories.size() - 1;
 
         if (isFirstItem)
-            start = dpToPx(16);
+            top = dpToPx(4);
         if (isLastItem)
-            end = dpToPx(16);
+            bottom = dpToPx(4);
 
         ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
-        layoutParams.setMarginStart(start);
-        layoutParams.setMarginEnd(end);
+        layoutParams.topMargin = top;
+        layoutParams.bottomMargin = bottom;
         backgroundLayout.setLayoutParams(layoutParams);
 
         btnCategory.setOnClickListener(view -> {
@@ -77,7 +77,7 @@ public class ProductCategoryHorizontalAdapter
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ConstraintLayout backgroundLayout;
-        Button btnCategory;
+        TextView btnCategory;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

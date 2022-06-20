@@ -87,7 +87,7 @@ public class MealPlanCategoriesFragment extends Fragment {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             MealPlanCategory mealPlanCategory = dataSnapshot.getValue(MealPlanCategory.class);
-                            if (mealPlanCategory != null)
+                            if (mealPlanCategory != null && !mealPlanCategory.isDeactivated())
                                 mealPlanCategories.add(mealPlanCategory);
                         }
                     }
@@ -118,7 +118,7 @@ public class MealPlanCategoriesFragment extends Fragment {
     @Override
     public void onResume() {
         isListening = true;
-        mealPlanCategoriesQuery.addValueEventListener(getMealPlanCatValueListener());
+        mealPlanCategoriesQuery.addListenerForSingleValueEvent(getMealPlanCatValueListener());
 
         super.onResume();
     }

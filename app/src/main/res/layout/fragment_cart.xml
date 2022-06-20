@@ -35,6 +35,7 @@
 
         <CheckBox
             android:id="@+id/cbSelectAll"
+            style="@style/FlatButtonStyle2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -43,10 +44,7 @@
             android:layout_marginBottom="8dp"
             android:background="@color/mp_white_accent"
             android:buttonTint="@color/mp_blue"
-            android:fontFamily="@font/poppins_regular"
             android:layoutDirection="rtl"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
             android:text="@string/selectAll"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

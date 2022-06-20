@@ -44,7 +44,7 @@ import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
 
-    TextView appNavTextView, tvCartCount;
+    TextView tvAppNav, tvCartCount;
     ImageView cartIconImage;
 
     BottomNavigationView bottomNavigationView;
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        appNavTextView = findViewById(R.id.appNavTextView);
+        tvAppNav = findViewById(R.id.tvAppNav);
         cartIconImage = findViewById(R.id.cartIconImage);
         tvCartCount = findViewById(R.id.tvCartCount);
 
@@ -145,15 +145,15 @@ public class MainActivity extends AppCompatActivity {
              */
 
             if (bottomNavigationView.getSelectedItemId() == R.id.homeFragment) {
-                appNavTextView.setText(getString(R.string.home1));
+                tvAppNav.setText(getString(R.string.home1));
             } else if (bottomNavigationView.getSelectedItemId() == R.id.categoriesFragment) {
-                appNavTextView.setText(getString(R.string.categories));
+                tvAppNav.setText(getString(R.string.categories));
             } else if (bottomNavigationView.getSelectedItemId() == R.id.chatListFragment) {
-                appNavTextView.setText(getString(R.string.chatList));
+                tvAppNav.setText(getString(R.string.chatList));
             } else if (bottomNavigationView.getSelectedItemId() == R.id.notificationFragment) {
-                appNavTextView.setText(getString(R.string.notifications));
+                tvAppNav.setText(getString(R.string.notifications));
             } else {
-                appNavTextView.setText(getString(R.string.more));
+                tvAppNav.setText(getString(R.string.more));
             }
         });
 
@@ -268,8 +268,7 @@ public class MainActivity extends AppCompatActivity {
                         .setContentText(notification.getValue())
                         .setCategory(category)
                         .setVisibility(visibility)
-                        .setDefaults(NotificationCompat.DEFAULT_ALL)
-                        .setAutoCancel(false);
+                        .setDefaults(NotificationCompat.DEFAULT_ALL);
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O)
             builder.setPriority(Notification.PRIORITY_HIGH);
@@ -361,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        cartProductsQuery.addValueEventListener(getCartValueListener());
+        cartProductsQuery.addListenerForSingleValueEvent(getCartValueListener());
 
         super.onResume();
     }

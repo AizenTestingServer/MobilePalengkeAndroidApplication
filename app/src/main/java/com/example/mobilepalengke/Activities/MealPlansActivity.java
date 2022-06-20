@@ -72,7 +72,7 @@ public class MealPlansActivity extends AppCompatActivity {
     IconOptionAdapter iconOptionAdapter;
 
     List<IconOption> mealPlanCategories = new ArrayList<>();
-    List<String> productCategoriesId = new ArrayList<>();
+    List<String> mealPlanCategoriesId = new ArrayList<>();
 
     int selectedCategoryIndex = 0;
     String selectedCategoryId;
@@ -113,16 +113,21 @@ public class MealPlansActivity extends AppCompatActivity {
         selectedCategoryId = getIntent().getStringExtra("selectedCategoryId");
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        mealPlansQuery = firebaseDatabase.getReference("mealPlans").orderByChild("id");
+        mealPlansQuery = firebaseDatabase.getReference("mealPlans").orderByChild("name");
         mealPlanCategoriesQuery = firebaseDatabase.getReference("mealPlanCategories").orderByChild("name");
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid);
 
         loadingDialog.showDialog();
         isListening = true;
-        mealPlansQuery.addValueEventListener(getProdValueListener());
+        mealPlansQuery.addValueEventListener(getMealPlanValueListener());
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         mealPlanAdapter = new MealPlanAdapter(context, mealPlans);
+        mealPlanAdapter.setMealPlanAdapterListener(mealPlan -> {
+            Intent intent = new Intent(context, MealPlanDetailsActivity.class);
+            intent.putExtra("mealPlanId", mealPlan.getId());
+            context.startActivity(intent);
+        });
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.setAdapter(mealPlanAdapter);
 
@@ -140,12 +145,12 @@ public class MealPlansActivity extends AppCompatActivity {
                 tvSelectedCategory.setText(iconOption.getLabelName());
 
                 selectedCategoryIndex = position;
-                selectedCategoryId = productCategoriesId.get(position);
+                selectedCategoryId = mealPlanCategoriesId.get(position);
 
                 mealPlanCategoriesLayout.setVisibility(View.GONE);
                 mealPlansLayout.setVisibility(View.VISIBLE);
 
-                filterProducts();
+                filterMealPlans();
             }
         });
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL,
@@ -173,7 +178,7 @@ public class MealPlansActivity extends AppCompatActivity {
             public void afterTextChanged(Editable editable) {
                 searchValue = editable.toString();
 
-                filterProducts();
+                filterMealPlans();
             }
         });
 
@@ -193,7 +198,7 @@ public class MealPlansActivity extends AppCompatActivity {
         });
     }
 
-    private ValueEventListener getProdValueListener() {
+    private ValueEventListener getMealPlanValueListener() {
         return new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
@@ -204,20 +209,13 @@ public class MealPlansActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             MealPlan mealPlan = dataSnapshot.getValue(MealPlan.class);
-                            if (mealPlan != null)
+                            if (mealPlan != null && !mealPlan.isDeactivated())
                                 mealPlans.add(mealPlan);
                         }
                     }
 
-                    if (mealPlans.size() == 0)
-                        tvMealPlanCaption.setVisibility(View.VISIBLE);
-                    else tvMealPlanCaption.setVisibility(View.GONE);
-                    tvMealPlanCaption.bringToFront();
-
-                    mealPlanAdapter.notifyDataSetChanged();
+                    mealPlanCategoriesQuery.addValueEventListener(getMealPlanCatValueListener());
                 }
-
-                mealPlanCategoriesQuery.addValueEventListener(getMealPlanValueListener());
             }
 
             @Override
@@ -232,18 +230,19 @@ public class MealPlansActivity extends AppCompatActivity {
         };
     }
 
-    private ValueEventListener getMealPlanValueListener() {
+    private ValueEventListener getMealPlanCatValueListener() {
         return new ValueEventListener() {
             @SuppressLint("NotifyDataSetChanged")
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
+                    mealPlansCategories.clear();
                     mealPlanCategories.clear();
-                    productCategoriesId.clear();
+                    mealPlanCategoriesId.clear();
 
                     if (snapshot.exists()) {
                         mealPlanCategories.add(new IconOption(getString(R.string.all), 0));
-                        productCategoriesId.add("prodCat00");
+                        mealPlanCategoriesId.add("mlpCat00");
 
                         for (MealPlan mealPlan : mealPlans) {
                             List<String> categoryIds = mealPlan.getCategories() != null ?
@@ -260,10 +259,10 @@ public class MealPlansActivity extends AppCompatActivity {
 
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             mealPlanCategories.add(new IconOption(dataSnapshot.child("name").getValue(String.class), 0));
-                            productCategoriesId.add(dataSnapshot.getKey());
+                            mealPlanCategoriesId.add(dataSnapshot.getKey());
 
                             if (selectedCategoryId != null && selectedCategoryId.equals(dataSnapshot.getKey())) {
-                                selectedCategoryIndex = productCategoriesId.size() - 1;
+                                selectedCategoryIndex = mealPlanCategoriesId.size() - 1;
                                 tvSelectedCategory.setText(mealPlanCategories.get(selectedCategoryIndex).getLabelName());
                             }
                         }
@@ -275,7 +274,7 @@ public class MealPlansActivity extends AppCompatActivity {
                     mealPlansCopy.addAll(mealPlans);
                     mealPlanCategoriesCopy.addAll(mealPlansCategories);
 
-                    filterProducts();
+                    filterMealPlans();
 
                     iconOptionAdapter.notifyDataSetChanged();
 
@@ -328,11 +327,12 @@ public class MealPlansActivity extends AppCompatActivity {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void filterProducts() {
+    private void filterMealPlans() {
         List<MealPlan> mealPlansTemp = new ArrayList<>(mealPlansCopy);
         List<String> mealPlanCategoriesTemp = new ArrayList<>(mealPlanCategoriesCopy);
 
         mealPlans.clear();
+        mealPlansCategories.clear();
 
         for (int i = 0; i < mealPlansTemp.size(); i++) {
             List<String> categoriesId = mealPlansTemp.get(i).getCategories() != null ?
@@ -372,10 +372,15 @@ public class MealPlansActivity extends AppCompatActivity {
         }
     }
 
+    boolean isStopped = false;
+
     @Override
     public void onResume() {
-        isListening = true;
-        mealPlansQuery.addValueEventListener(getMealPlanValueListener());
+        if (isStopped) {
+            isListening = true;
+            mealPlansQuery.addListenerForSingleValueEvent(getMealPlanValueListener());
+            isStopped = false;
+        }
 
         super.onResume();
     }
@@ -383,6 +388,7 @@ public class MealPlansActivity extends AppCompatActivity {
     @Override
     public void onStop() {
         isListening = false;
+        isStopped = true;
 
         super.onStop();
     }
@@ -390,6 +396,7 @@ public class MealPlansActivity extends AppCompatActivity {
     @Override
     public void onDestroy() {
         isListening = false;
+        isStopped = true;
 
         super.onDestroy();
     }

@@ -7,9 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.mobilepalengke.Adapters.CheckOutAdapter;
+import com.example.mobilepalengke.Adapters.AdminOrderAdapter;
 import com.example.mobilepalengke.DataClasses.Order;
 import com.example.mobilepalengke.DataClasses.Product;
+import com.example.mobilepalengke.DataClasses.User;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.R;
@@ -20,6 +21,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -41,12 +43,13 @@ public class AdminOrderActivity extends AppCompatActivity {
 
     boolean isListening = true;
 
-    Query ordersQuery, productsQuery;
+    Query ordersQuery, productsQuery, usersQuery, rolesQuery;
 
     List<Order> orders = new ArrayList<>();
     List<Product> products = new ArrayList<>();
+    List<User> users = new ArrayList<>();
 
-    CheckOutAdapter checkOutAdapter;
+    AdminOrderAdapter adminOrderAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,15 +67,17 @@ public class AdminOrderActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         ordersQuery = firebaseDatabase.getReference("orders");
         productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
+        usersQuery = firebaseDatabase.getReference("users");
+        rolesQuery = firebaseDatabase.getReference();
 
         loadingDialog.showDialog();
         isListening = true;
         ordersQuery.addValueEventListener(getOrdersValueListener());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        checkOutAdapter = new CheckOutAdapter(context, orders, products);
+        adminOrderAdapter = new AdminOrderAdapter(context, orders, products, users);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(checkOutAdapter);
+        recyclerView.setAdapter(adminOrderAdapter);
     }
 
     private ValueEventListener getOrdersValueListener() {
@@ -89,7 +94,7 @@ public class AdminOrderActivity extends AppCompatActivity {
                                 orders.add(order);
                         }
 
-                    loadingDialog.dismissDialog();
+                    Collections.reverse(orders);
 
                     productsQuery.addValueEventListener(getProductsValueListener());
                 }
@@ -128,9 +133,7 @@ public class AdminOrderActivity extends AppCompatActivity {
                         tvCheckOutCaption.setVisibility(View.GONE);
                     tvCheckOutCaption.bringToFront();
 
-                    checkOutAdapter.notifyDataSetChanged();
-
-                    loadingDialog.dismissDialog();
+                    usersQuery.addValueEventListener(getUsersValueListener());
                 }
             }
 
@@ -140,6 +143,40 @@ public class AdminOrderActivity extends AppCompatActivity {
                 loadingDialog.dismissDialog();
 
                 messageDialog.setTextCaption("Failed to get the products.");
+                messageDialog.setTextType(2);
+                messageDialog.showDialog();
+            }
+        };
+    }
+
+    private ValueEventListener getUsersValueListener() {
+        return new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    users.clear();
+
+                    if (snapshot.exists()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            User user = dataSnapshot.getValue(User.class);
+                            if (user != null)
+                                users.add(user);
+                        }
+                    }
+
+                    adminOrderAdapter.notifyDataSetChanged();
+
+                    loadingDialog.dismissDialog();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "usersQuery:onCancelled", error.toException());
+                loadingDialog.dismissDialog();
+
+                messageDialog.setTextCaption("Failed to get the users.");
                 messageDialog.setTextType(2);
                 messageDialog.showDialog();
             }

@@ -219,12 +219,11 @@ public class ChatActivity extends AppCompatActivity {
                                 new ArrayList<>();
                         List<String> roles = new ArrayList<>();
 
-                        for (String roleId : roleIds)
-                            if (roleId.contains("ar")) {
-                                Role role = snapshot.child(roleId.trim()).getValue(Role.class);
-                                if (role != null)
-                                    roles.add(role.getName());
-                            }
+                        for (String roleId : roleIds) {
+                            Role role = snapshot.child(roleId.trim()).getValue(Role.class);
+                            if (role != null)
+                                roles.add(role.getName());
+                        }
 
                         tvRoles.setText(TextUtils.join(", ", roles));
                     }
@@ -250,6 +249,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
+                    overallChatCount = 0;
                     imgAlert.setVisibility(View.GONE);
 
                     if (snapshot.exists()) {
@@ -413,7 +413,7 @@ public class ChatActivity extends AppCompatActivity {
 
             NotificationItem notification = new NotificationItem(
                     endPointNotificationId, notifDescription, notifTitle, notifValue, curDateAndTime, activityText,
-                    2, 2, 3, mapAttributes
+                    2, 2, 3, false, false, mapAttributes
             );
 
             firebaseDatabase.getReference("chatList").child(chatId)
@@ -479,7 +479,7 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        endPointUserQuery.addValueEventListener(getEndPointUserValueListener());
+        endPointUserQuery.addListenerForSingleValueEvent(getEndPointUserValueListener());
 
         if (chatId != null)
             firebaseDatabase.getReference("chatList").child(chatId)

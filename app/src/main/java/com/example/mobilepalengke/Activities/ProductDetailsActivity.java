@@ -12,8 +12,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.Adapters.ProductAdapter;
-import com.example.mobilepalengke.Adapters.ProductCategoryHorizontalAdapter;
+import com.example.mobilepalengke.Adapters.ProductCategoryButtonAdapter;
 import com.example.mobilepalengke.DataClasses.Cart;
 import com.example.mobilepalengke.DataClasses.CartProduct;
 import com.example.mobilepalengke.DataClasses.Product;
@@ -28,7 +29,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +64,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
     List<ProductCategory> productCategories = new ArrayList<>();
 
-    ProductCategoryHorizontalAdapter productCategoryHorizontalAdapter;
+    ProductCategoryButtonAdapter productCategoryButtonAdapter;
 
     Product currentProduct;
 
@@ -124,11 +124,11 @@ public class ProductDetailsActivity extends AppCompatActivity {
         isListening = true;
         productQuery.addValueEventListener(getProdValueListener());
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL,
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL,
                 false);
-        productCategoryHorizontalAdapter = new ProductCategoryHorizontalAdapter(context, productCategories);
+        productCategoryButtonAdapter = new ProductCategoryButtonAdapter(context, productCategories);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(productCategoryHorizontalAdapter);
+        recyclerView.setAdapter(productCategoryButtonAdapter);
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         productAdapter = new ProductAdapter(context, relatedProducts);
@@ -176,6 +176,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
             quantity = 1;
             tvQty.setText(context.getString(R.string.qtyValue, quantity));
+
+            btnSubtractQty.setEnabled(quantity > 1);
         });
     }
 
@@ -187,26 +189,31 @@ public class ProductDetailsActivity extends AppCompatActivity {
                 if (isListening) {
                     relatedProducts.clear();
 
-                    if (snapshot.exists())
+                    if (snapshot.exists()) {
                         currentProduct = snapshot.child(productId).getValue(Product.class);
 
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        Product product = dataSnapshot.getValue(Product.class);
-                        if (product != null && product.getCategories() != null)
-                            for (Map.Entry<String, String> mapProductCategories : product.getCategories().entrySet())
-                                if (currentProduct != null && !currentProduct.getId().equals(product.getId()) &&
-                                        currentProduct.getCategories().containsValue(mapProductCategories.getValue())) {
-                                    relatedProducts.add(product);
-                                    break;
-                                }
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Product product = dataSnapshot.getValue(Product.class);
+                            if (product != null && product.getCategories() != null && !product.isDeactivated())
+                                for (Map.Entry<String, String> mapProductCategories : product.getCategories().entrySet())
+                                    if (currentProduct != null && !currentProduct.getId().equals(product.getId()) &&
+                                            currentProduct.getCategories() != null &&
+                                            currentProduct.getCategories().containsValue(mapProductCategories.getValue())) {
+                                        relatedProducts.add(product);
+                                        break;
+                                    }
+                        }
                     }
                 }
 
                 if (currentProduct != null) {
                     tvLabel.setText(currentProduct.getName());
                     tvPrice.setText(context.getString(R.string.priceValue, currentProduct.getPrice()));
-                    Picasso.get().load(currentProduct.getImg()).placeholder(R.drawable.ic_image_blue)
-                            .error(R.drawable.ic_broken_image_red).into(imgProduct);
+
+                    try {
+                        Glide.with(context).load(currentProduct.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                error(R.drawable.ic_broken_image_red).into(imgProduct);
+                    } catch (Exception ex) {}
 
                     String description = "";
                     if (currentProduct.getDescriptions() != null)
@@ -264,12 +271,13 @@ public class ProductDetailsActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             ProductCategory productCategory = dataSnapshot.getValue(ProductCategory.class);
-                            if (productCategory != null && categoryIds.contains(productCategory.getId()))
+                            if (productCategory != null && !productCategory.isDeactivated() &&
+                                    categoryIds.contains(productCategory.getId()))
                                 productCategories.add(productCategory);
                         }
                     }
 
-                    productCategoryHorizontalAdapter.notifyDataSetChanged();
+                    productCategoryButtonAdapter.notifyDataSetChanged();
 
                     cartProductsQuery.addValueEventListener(getCartValueListener());
                 }
@@ -376,7 +384,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        productQuery.addValueEventListener(getProdValueListener());
+        productQuery.addListenerForSingleValueEvent(getProdValueListener());
 
         super.onResume();
     }

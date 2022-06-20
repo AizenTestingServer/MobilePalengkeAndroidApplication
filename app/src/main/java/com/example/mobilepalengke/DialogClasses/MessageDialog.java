@@ -16,13 +16,12 @@ import androidx.core.content.ContextCompat;
 
 public class MessageDialog {
 
-    TextView messageTextView;
-    ImageView imgSuccess, imgError, imgInfo;
-    Button btnOK;
+    private TextView messageTextView;
+    private ImageView imgSuccess, imgError, imgInfo;
 
-    Context context;
-    Activity activity;
-    Dialog dialog;
+    private final Context context;
+    private final Activity activity;
+    private Dialog dialog;
 
     public MessageDialog(Context context) {
         this.context = context;
@@ -47,7 +46,7 @@ public class MessageDialog {
         imgSuccess = dialog.findViewById(R.id.imgSuccess);
         imgError = dialog.findViewById(R.id.imgError);
         imgInfo = dialog.findViewById(R.id.imgInfo);
-        btnOK = dialog.findViewById(R.id.btnOK);
+        Button btnOK = dialog.findViewById(R.id.btnOK);
 
         btnOK.setOnClickListener(view -> dismissDialog());
     }

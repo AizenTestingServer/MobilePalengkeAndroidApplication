@@ -7,10 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.DataClasses.CheckOutProduct;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -20,15 +20,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class CheckOutProductAdapter extends RecyclerView.Adapter<CheckOutProductAdapter.ViewHolder> {
 
+    List<CheckOutProduct> checkOutProducts;
+    List<Product> products;
+
     LayoutInflater layoutInflater;
 
     Context context;
 
-    List<CheckOutProduct> checkOutProducts;
-    List<Product> products;
+    @Override
+    public void onAttachedToRecyclerView(@NonNull RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+    }
 
-    public CheckOutProductAdapter(Context context, List<CheckOutProduct> checkOutProducts,
-                                  List<Product> products) {
+    public CheckOutProductAdapter(Context context, List<CheckOutProduct> checkOutProducts, List<Product> products) {
         this.checkOutProducts = checkOutProducts;
         this.products = products;
         this.layoutInflater = LayoutInflater.from(context);
@@ -39,45 +43,58 @@ public class CheckOutProductAdapter extends RecyclerView.Adapter<CheckOutProduct
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = layoutInflater.inflate(R.layout.custom_check_out_product_layout, parent, false);
+        View view = layoutInflater.inflate(R.layout.custom_check_out_product_grid_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        ConstraintLayout backgroundLayout = holder.backgroundLayout;
+        ConstraintLayout constraintLayout = holder.constraintLayout;
         ImageView imgProduct = holder.imgProduct;
-        TextView tvLabel = holder.tvLabel,
+        TextView tvProductName = holder.tvProductName,
+                tvPrice = holder.tvPrice,
                 tvQty = holder.tvQty;
 
-        CheckOutProduct checkOutProduct = checkOutProducts.get(position);
-        Product product = products.get(position);
+        if (products.size() != 0) {
+            CheckOutProduct checkOutProduct = checkOutProducts.get(position);
+            Product product = products.get(position);
 
-        for (Product product1 : products) {
-            if (product1.getId().equals(checkOutProduct.getId())) {
-                product = product1;
-                break;
-            }
+            try {
+                Glide.with(context).load(product.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                        error(R.drawable.ic_broken_image_red).into(imgProduct);
+            } catch (Exception ex) {}
+
+            tvProductName.setText(product.getName());
+            tvPrice.setText(context.getString(R.string.priceValue, checkOutProduct.getTotalPrice()));
+            tvQty.setText(context.getString(R.string.checkOutQtyValue, checkOutProduct.getQuantity(),
+                    checkOutProduct.getQuantity() <= 1 ? "" : "s"));
+
+            int start = dpToPx(0), end = dpToPx(0), top = dpToPx(0), bottom = dpToPx(0);
+
+            boolean isFirstColumn = (position + 1) % 2 == 1, isLastColumn = (position + 1) % 2 == 0;
+            int lastRowFirstItem = checkOutProducts.size() % 2 == 0 ? checkOutProducts.size() - 1 : checkOutProducts.size();
+            boolean isFirstRow = position + 1 <= 2, isLastRow = position + 1 >= lastRowFirstItem;
+
+            if (isFirstColumn) start = dpToPx(4);
+            if (isLastColumn) end = dpToPx(4);
+            if (isFirstRow) top = dpToPx(4);
+            if (isLastRow) bottom = dpToPx(4);
+
+            ConstraintLayout.LayoutParams layoutParams =
+                    (ConstraintLayout.LayoutParams) constraintLayout.getLayoutParams();
+            layoutParams.setMarginStart(start);
+            layoutParams.setMarginEnd(end);
+            layoutParams.topMargin = top;
+            layoutParams.bottomMargin = bottom;
+            constraintLayout.setLayoutParams(layoutParams);
+
+            /*backgroundLayout.setOnClickListener(view -> {
+                Intent intent = new Intent(context, ProductDetailsActivity.class);
+                intent.putExtra("productId", product.getId());
+                intent.putExtra("isFromCart", true);
+                context.startActivity(intent);
+            });*/
         }
-
-        tvLabel.setText(product.getName());
-        tvQty.setText(context.getString(R.string.ctrQtyValue, checkOutProduct.getQuantity()));
-        Picasso.get().load(product.getImg()).placeholder(R.drawable.ic_image_blue)
-                .error(R.drawable.ic_broken_image_red).into(imgProduct);
-
-        int start = dpToPx(4), end = dpToPx(4);
-
-        boolean isFirstItem = position == 0, isLastItem = position == checkOutProducts.size() - 1;
-
-        if (isFirstItem)
-            start = dpToPx(8);
-        if (isLastItem)
-            end = dpToPx(8);
-
-        ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
-        layoutParams.setMarginStart(start);
-        layoutParams.setMarginEnd(end);
-        backgroundLayout.setLayoutParams(layoutParams);
     }
 
     @Override
@@ -86,16 +103,18 @@ public class CheckOutProductAdapter extends RecyclerView.Adapter<CheckOutProduct
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         ImageView imgProduct;
-        TextView tvLabel, tvQty;
+        TextView tvProductName, tvPrice, tvQty;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             imgProduct = itemView.findViewById(R.id.imgProduct);
-            tvLabel = itemView.findViewById(R.id.tvLabel);
+            tvProductName = itemView.findViewById(R.id.tvProductName);
+            tvPrice = itemView.findViewById(R.id.tvPrice);
             tvQty = itemView.findViewById(R.id.tvQty);
 
             setIsRecyclable(false);

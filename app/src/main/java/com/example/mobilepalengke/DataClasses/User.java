@@ -5,7 +5,7 @@ import java.util.Map;
 public class User {
 
     private String id, lastName, firstName;
-    private Map<String, String> roles;
+    private Map<String, String> roles, mobileNumbers;
 
     public User() {
     }
@@ -30,6 +30,10 @@ public class User {
 
     public Map<String, String> getRoles() {
         return roles;
+    }
+
+    public Map<String, String> getMobileNumbers() {
+        return mobileNumbers;
     }
 
     public void setRoles(Map<String, String> roles) {

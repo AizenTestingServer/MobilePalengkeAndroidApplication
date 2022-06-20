@@ -19,15 +19,14 @@ import androidx.core.content.ContextCompat;
 
 public class AddressDialog {
 
-    TextView textView, tvErrorCaption;
-    EditText etLabel, etAddress;
-    Button btnConfirm, btnCancel;
+    private TextView textView, tvErrorCaption;
+    private EditText etLabel, etAddress;
 
-    String label, value, addressId;
+    private final Context context;
+    private final Activity activity;
+    private Dialog dialog;
 
-    Context context;
-    Activity activity;
-    Dialog dialog;
+    private String label, value, addressId;
 
     public AddressDialog(Context context) {
         this.context = context;
@@ -46,14 +45,13 @@ public class AddressDialog {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_address_layout);
         dialog.setCanceledOnTouchOutside(false);
-        dialog.setCancelable(false);
 
         textView = dialog.findViewById(R.id.textView);
         tvErrorCaption = dialog.findViewById(R.id.tvErrorCaption);
         etLabel = dialog.findViewById(R.id.etLabel);
         etAddress = dialog.findViewById(R.id.etAddress);
-        btnConfirm = dialog.findViewById(R.id.btnConfirm);
-        btnCancel = dialog.findViewById(R.id.btnCancel);
+        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
+        Button btnCancel = dialog.findViewById(R.id.btnCancel);
 
         etLabel.addTextChangedListener(new TextWatcher() {
             @Override
@@ -154,8 +152,8 @@ public class AddressDialog {
             if (isInvalidLabel || isInvalidAddress) {
                 if (isInvalidLabel)
                     tvErrorCaption.setText(context.getString(R.string.invalidLabel));
-                if (isInvalidAddress)
-                    tvErrorCaption.setText(context.getString(R.string.invalidAddress));
+                else tvErrorCaption.setText(context.getString(R.string.invalidAddress));
+
                 tvErrorCaption.setVisibility(View.VISIBLE);
                 return;
             }

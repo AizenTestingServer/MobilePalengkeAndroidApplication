@@ -11,16 +11,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.IconOptionAdapter;
 import com.example.mobilepalengke.Adapters.UserAdapter;
+import com.example.mobilepalengke.DataClasses.CheckableItem;
 import com.example.mobilepalengke.DataClasses.IconOption;
 import com.example.mobilepalengke.DataClasses.Role;
+import com.example.mobilepalengke.DataClasses.RoleItem;
 import com.example.mobilepalengke.DataClasses.Roles;
 import com.example.mobilepalengke.DataClasses.User;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.RolesDialog;
 import com.example.mobilepalengke.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
@@ -49,10 +55,13 @@ public class AdminUsersActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    RolesDialog rolesDialog;
 
     FirebaseDatabase firebaseDatabase;
 
     Query usersQuery, rolesQuery;
+
+    String uid;
 
     boolean isListening = true;
 
@@ -68,10 +77,17 @@ public class AdminUsersActivity extends AppCompatActivity {
     List<IconOption> roles = new ArrayList<>();
     List<String> rolesId = new ArrayList<>();
 
+    List<RoleItem> roleItems = new ArrayList<>();
+
     IconOptionAdapter iconOptionAdapter;
 
     int selectedRoleIndex = 0;
     String selectedRoleId;
+
+    User selectedUser, currentUser;
+    int currentLevel = 0;
+
+    List<CheckableItem> userRolesCheckableItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +113,11 @@ public class AdminUsersActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        rolesDialog = new RolesDialog(context);
+
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+        if (firebaseUser != null) uid = firebaseUser.getUid();
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         usersQuery = firebaseDatabase.getReference("users");
@@ -108,11 +129,17 @@ public class AdminUsersActivity extends AppCompatActivity {
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         userAdapter = new UserAdapter(context, users, usersRoles);
-        userAdapter.setUserAdapterListener(new UserAdapter.UserAdapterListener() {
-            @Override
-            public void onClick(User user) {
+        userAdapter.setUserAdapterListener(user -> {
+            selectedUser = user;
 
-            }
+            List<CheckableItem> selectedUserRolesCheckableItems = new ArrayList<>();
+
+            if (user.getRoles() != null)
+                for (Map.Entry<String, String> mapCategories : user.getRoles().entrySet())
+                    selectedUserRolesCheckableItems.add(new CheckableItem(mapCategories.getValue()));
+
+            rolesDialog.showDialog();
+            rolesDialog.setCheckableItems(userRolesCheckableItems, selectedUserRolesCheckableItems, currentLevel);
         });
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(userAdapter);
@@ -143,6 +170,34 @@ public class AdminUsersActivity extends AppCompatActivity {
                 false);
         recyclerView2.setLayoutManager(linearLayoutManager2);
         recyclerView2.setAdapter(iconOptionAdapter);
+
+        rolesDialog.setDialogListener((mapSelectedItems, selectedCheckableItems) -> {
+            selectedUser.setRoles(mapSelectedItems);
+
+            usersQuery.getRef().child(selectedUser.getId()).setValue(selectedUser).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(
+                            context,
+                            "Successfully updated the roles.",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    rolesDialog.dismissDialog();
+                } else {
+                    String error = "";
+                    if (task.getException() != null)
+                        error = task.getException().toString();
+
+                    messageDialog.setTextCaption(error);
+                    messageDialog.setTextType(2);
+                    messageDialog.showDialog();
+                }
+
+                loadingDialog.dismissDialog();
+            });
+
+            rolesDialog.dismissDialog();
+        });
 
         etSearchUser.addTextChangedListener(new TextWatcher() {
             @Override
@@ -190,8 +245,12 @@ public class AdminUsersActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             User user = dataSnapshot.getValue(User.class);
-                            if (user != null)
+                            if (user != null) {
                                 users.add(user);
+
+                                if (user.getId().equals(uid))
+                                    currentUser = user;
+                            }
                         }
                     }
 
@@ -218,8 +277,10 @@ public class AdminUsersActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
                     usersRoles.clear();
+                    roleItems.clear();
                     roles.clear();
                     rolesId.clear();
+                    userRolesCheckableItems.clear();
 
                     if (snapshot.exists()) {
                         roles.add(new IconOption(getString(R.string.all), 0));
@@ -252,10 +313,28 @@ public class AdminUsersActivity extends AppCompatActivity {
                                     for (Map.Entry<String, Role> roleInCategory : rolesInCategory.getValue().entrySet()) {
                                         Role role = roleInCategory.getValue();
                                         if (role != null) {
-                                            roles.add(new IconOption(role.getName(), 0));
-                                            rolesId.add(roleInCategory.getKey());
+                                            RoleItem roleItem = new RoleItem(role, roleInCategory.getKey());
+                                            roleItems.add(roleItem);
                                         }
                                     }
+                    }
+
+                    roleItems.sort((roleItem, t1) -> roleItem.getName().compareToIgnoreCase(t1.getName()));
+
+                    currentLevel = 0;
+                    for (RoleItem roleItem : roleItems) {
+                        roles.add(new IconOption(roleItem.getName(), 0));
+                        rolesId.add(roleItem.getType());
+
+                        CheckableItem checkableItem = new CheckableItem(roleItem.getId(),
+                                roleItem.getName(), "Level " + roleItem.getLevel());
+                        userRolesCheckableItems.add(checkableItem);
+
+                        for (Map.Entry<String, String> mapRoles : currentUser.getRoles().entrySet())
+                            if (mapRoles.getValue().equals(roleItem.getId())) {
+                                currentLevel = Math.max(currentLevel, roleItem.getLevel());
+                                break;
+                            }
                     }
 
                     usersCopy.clear();
@@ -274,7 +353,7 @@ public class AdminUsersActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("TAG: " + context.getClass(), "adminRolesQuery:onCancelled", error.toException());
+                Log.e("TAG: " + context.getClass(), "rolesQuery:onCancelled", error.toException());
                 loadingDialog.dismissDialog();
 
                 messageDialog.setTextCaption("Failed to get the admin roles.");
@@ -337,7 +416,7 @@ public class AdminUsersActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        usersQuery.addValueEventListener(getUsersValueListener());
+        usersQuery.addListenerForSingleValueEvent(getUsersValueListener());
 
         super.onResume();
     }

@@ -114,8 +114,7 @@ public class AddressActivity extends AppCompatActivity {
 
             Address newAddress = new Address(addressId, uid, address.getName(), address.getValue());
 
-            firebaseDatabase.getReference("addressList").child(addressId)
-                    .setValue(newAddress).addOnCompleteListener(task -> {
+            addressQuery.getRef().child(addressId).setValue(newAddress).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(
                                     context,
@@ -145,6 +144,7 @@ public class AddressActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
+                    overallAddressCount = 0;
                     addressList.clear();
 
                     if (snapshot.exists()) {
@@ -163,9 +163,9 @@ public class AddressActivity extends AppCompatActivity {
                     tvAddressCaption.bringToFront();
 
                     addressAdapter.notifyDataSetChanged();
-                }
 
-                loadingDialog.dismissDialog();
+                    loadingDialog.dismissDialog();
+                }
             }
 
             @Override

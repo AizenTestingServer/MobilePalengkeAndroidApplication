@@ -7,10 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.Activities.ProductsActivity;
 import com.example.mobilepalengke.DataClasses.ProductCategory;
 import com.example.mobilepalengke.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -47,8 +47,10 @@ public class ProductCategoryAdapter extends RecyclerView.Adapter<ProductCategory
 
         ProductCategory productCategory = productCategories.get(position);
 
-        Picasso.get().load(productCategory.getImg()).placeholder(R.drawable.ic_image_blue)
-                .error(R.drawable.ic_broken_image_red).into(imgCategory);
+        try {
+            Glide.with(context).load(productCategory.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                    error(R.drawable.ic_broken_image_red).into(imgCategory);
+        } catch (Exception ex) {}
 
         /*
          * int start = dpToPx(4), end = dpToPx(4), top = dpToPx(4), bottom = dpToPx(4);

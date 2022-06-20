@@ -96,8 +96,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
         isListening = true;
         userQuery.addValueEventListener(getUserValueListener());
 
-        // checkIfEmailAddressIsVerified();
-
         tvResendLink.setOnClickListener(view -> sendEmailVerificationLink());
 
         btnChangeName.setOnClickListener(view -> {
@@ -150,8 +148,6 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
                     firebaseUser.reload();
                     tvEmail2.setText(firebaseUser.getEmail());
-
-                    // checkIfEmailAddressIsVerified();
 
                     changeEmailAddressDialog.dismissDialog();
                 } else {
@@ -339,7 +335,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        userQuery.addValueEventListener(getUserValueListener());
+        userQuery.addListenerForSingleValueEvent(getUserValueListener());
 
         super.onResume();
     }

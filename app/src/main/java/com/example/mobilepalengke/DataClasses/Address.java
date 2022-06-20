@@ -7,6 +7,8 @@ public class Address {
     public Address() {
     }
 
+
+
     public Address(String id, String ownerId, String name, String value) {
         this.id = id;
         this.ownerId = ownerId;
@@ -28,5 +30,13 @@ public class Address {
 
     public String getValue() {
         return value;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

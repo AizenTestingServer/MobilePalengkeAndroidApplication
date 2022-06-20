@@ -13,11 +13,11 @@ import androidx.core.content.ContextCompat;
 
 public class LoadingDialog {
 
-    TextView loadingTextView;
+    private TextView loadingTextView;
 
-    Context context;
-    Activity activity;
-    Dialog dialog;
+    private final Context context;
+    private final Activity activity;
+    private Dialog dialog;
 
     public LoadingDialog(Context context) {
         this.context = context;

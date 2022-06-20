@@ -15,8 +15,10 @@ import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.AdminProductAdapter;
 import com.example.mobilepalengke.Adapters.IconOptionAdapter;
+import com.example.mobilepalengke.DataClasses.CheckableItem;
 import com.example.mobilepalengke.DataClasses.IconOption;
 import com.example.mobilepalengke.DataClasses.Product;
+import com.example.mobilepalengke.DataClasses.ProductCategory;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.DialogClasses.ProductDialog;
@@ -79,6 +81,8 @@ public class AdminProductActivity extends AppCompatActivity {
 
     String uid;
 
+    List<CheckableItem> productCategoriesCheckableItems = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,7 +113,7 @@ public class AdminProductActivity extends AppCompatActivity {
             uid = firebaseUser.getUid();
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        productsQuery = firebaseDatabase.getReference("products").orderByChild("id");
+        productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
         productCategoriesQuery = firebaseDatabase.getReference("productCategories").orderByChild("name");
 
         loadingDialog.showDialog();
@@ -119,7 +123,7 @@ public class AdminProductActivity extends AppCompatActivity {
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         adminProductAdapter = new AdminProductAdapter(context, products);
         adminProductAdapter.setProductAdapterListener(product -> {
-            productDialog.showDialog();
+            productDialog.showDialog(productCategoriesCheckableItems);
             productDialog.setData(product);
         });
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -171,7 +175,7 @@ public class AdminProductActivity extends AppCompatActivity {
             }
         });
 
-        btnAddProduct.setOnClickListener(view -> productDialog.showDialog());
+        btnAddProduct.setOnClickListener(view -> productDialog.showDialog(productCategoriesCheckableItems));
 
         productDialog.setDialogListener((product) -> {
             loadingDialog.showDialog();
@@ -191,9 +195,9 @@ public class AdminProductActivity extends AppCompatActivity {
 
             Product newProduct = new Product(productId, product.getName(), product.getImg(),
                     product.getCategories(), product.getDescriptions(), product.getPrice());
+            newProduct.setDeactivated(product.isDeactivated());
 
-            firebaseDatabase.getReference("products").child(productId)
-                    .setValue(newProduct).addOnCompleteListener(task -> {
+            productsQuery.getRef().child(productId).setValue(newProduct).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(
                                     context,
@@ -251,16 +255,8 @@ public class AdminProductActivity extends AppCompatActivity {
                         }
                     }
 
-                    if (products.size() == 0)
-                        tvProductCaption.setVisibility(View.VISIBLE);
-                    else
-                        tvProductCaption.setVisibility(View.GONE);
-                    tvProductCaption.bringToFront();
-
-                    adminProductAdapter.notifyDataSetChanged();
+                    productCategoriesQuery.addValueEventListener(getProdCatValueListener());
                 }
-
-                productCategoriesQuery.addValueEventListener(getProdCatValueListener());
             }
 
             @Override
@@ -281,8 +277,10 @@ public class AdminProductActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
+                    productsCategories.clear();
                     productCategories.clear();
                     productCategoriesId.clear();
+                    productCategoriesCheckableItems.clear();
 
                     if (snapshot.exists()) {
                         productCategories.add(new IconOption(getString(R.string.all), 0));
@@ -308,6 +306,12 @@ public class AdminProductActivity extends AppCompatActivity {
                             if (selectedCategoryId != null && selectedCategoryId.equals(dataSnapshot.getKey())) {
                                 selectedCategoryIndex = productCategoriesId.size() - 1;
                                 tvSelectedCategory.setText(productCategories.get(selectedCategoryIndex).getLabelName());
+                            }
+
+                            ProductCategory productCategory = dataSnapshot.getValue(ProductCategory.class);
+                            if (productCategory != null) {
+                                CheckableItem checkableItem = new CheckableItem(productCategory.getId(), productCategory.getName());
+                                productCategoriesCheckableItems.add(checkableItem);
                             }
                         }
                     }
@@ -344,6 +348,7 @@ public class AdminProductActivity extends AppCompatActivity {
         List<String> productsCategoriesTemp = new ArrayList<>(productsCategoriesCopy);
 
         products.clear();
+        productsCategories.clear();
 
         for (int i = 0; i < productsTemp.size(); i++) {
             List<String> categoriesId = productsTemp.get(i).getCategories() != null ?
@@ -386,7 +391,7 @@ public class AdminProductActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        productsQuery.addValueEventListener(getProdCatValueListener());
+        productsQuery.addListenerForSingleValueEvent(getProdValueListener());
 
         super.onResume();
     }

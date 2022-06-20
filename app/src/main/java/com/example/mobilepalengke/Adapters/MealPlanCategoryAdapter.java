@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.Activities.MealPlansActivity;
 import com.example.mobilepalengke.DataClasses.MealPlanCategory;
 import com.example.mobilepalengke.R;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -50,22 +50,25 @@ public class MealPlanCategoryAdapter extends RecyclerView.Adapter<MealPlanCatego
         MealPlanCategory mealPlanCategory = mealPlanCategoryList.get(position);
 
         tvLabel.setText(mealPlanCategory.getName());
-        Picasso.get().load(mealPlanCategory.getImg()).placeholder(R.drawable.ic_image_blue)
-                .error(R.drawable.ic_broken_image_red).into(imgMealPlan);
+
+        try {
+            Glide.with(context).load(mealPlanCategory.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                    error(R.drawable.ic_broken_image_red).into(imgMealPlan);
+        } catch (Exception ex) {}
 
         /*
          * int start = dpToPx(4), end = dpToPx(4), top = dpToPx(4), bottom = dpToPx(4);
-         * 
+         *
          * boolean isFirstColumn = position % 3 == 0, isLastColumn = (position + 1) % 3
          * == 0;
          * boolean isFirstRow = position + 1 <= 3, isLastRow = position + 1 >=
          * productCategoryList.size();
-         * 
+         *
          * if (isFirstColumn) start = dpToPx(8);
          * if (isLastColumn) end = dpToPx(8);
          * if (isFirstRow) top = dpToPx(8);
          * if (isLastRow) bottom = dpToPx(8);
-         * 
+         *
          * ConstraintLayout.LayoutParams layoutParams =
          * (ConstraintLayout.LayoutParams) backgroundLayout.getLayoutParams();
          * layoutParams.setMarginStart(start);
@@ -88,13 +91,14 @@ public class MealPlanCategoryAdapter extends RecyclerView.Adapter<MealPlanCatego
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ConstraintLayout backgroundLayout;
+        ConstraintLayout constraintLayout, backgroundLayout;
         TextView tvLabel;
         ImageView imgMealPlan;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            constraintLayout = itemView.findViewById(R.id.constraintLayout);
             backgroundLayout = itemView.findViewById(R.id.backgroundLayout);
             tvLabel = itemView.findViewById(R.id.tvLabel);
             imgMealPlan = itemView.findViewById(R.id.imgMealPlan);

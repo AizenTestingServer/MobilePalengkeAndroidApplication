@@ -23,14 +23,23 @@
     <string name="btnChangePassword">Change Password</string>
     <string name="btnConfirm">Confirm</string>
     <string name="btnComposeMessage">Compose Message</string>
-    <string name="btnChange">Change</string>
+    <string name="btnChange"><u>Change</u></string>
     <string name="btnBack">Back</string>
     <string name="btnAddToCart">Add to Cart</string>
     <string name="btnRemove">Remove</string>
     <string name="btnCheckOut">Check-out</string>
     <string name="btnAddAddress">Add Address</string>
     <string name="btnDashboard">Go to Dashboard</string>
-    <string name="btnManage">Manage</string>
+    <string name="btnManage"><u>Manage</u></string>
+    <string name="btnSubmit">Submit</string>
+    <string name="btnCancelOrder">Cancel Order</string>
+    <string name="btnUpdateStatus">Update Status</string>
+    <string name="btnUpdatePrimaryDetails">Update Primary Details</string>
+    <string name="btnUpdateOverview">Update Overview</string>
+    <string name="btnUpdateInstructions">Update Instructions</string>
+    <string name="btnUpdateIngredients">Update Ingredients</string>
+    <string name="btnRemoveFromMealPlan">Remove from Meal Plan</string>
+    <string name="btnAddValue">Add Value</string>
 
     <string name="welcome1">Welcome to Mobile Palengke</string>
     <string name="welcome2">Here to make your life easier.\nJust tap your order and we\'ll deliver</string>
@@ -42,6 +51,14 @@
     <string name="unregisteredAccountText">Unregistered account</string>
     <string name="okText">OK</string>
     <string name="comingSoon">Coming soon</string>
+
+    <string name="intro1">Looking for something?</string>
+    <string name="intro2">We\'ve got it!</string>
+
+    <string name="notifText">You have 1 unread notification.</string>
+    <string name="notifValue">You have %d unread notification%s.</string>
+    <string name="chatText">Cou have 1 unread chat.</string>
+    <string name="chatValue">You have %d unread chat%s.</string>
 
     <string name="accDetails1">Account Details</string>
     <string name="accDetails2">Public Details</string>
@@ -57,7 +74,7 @@
     <string name="timer">0:00</string>
 
     <string name="signIn1">Forgot Password?</string>
-    <string name="signUp1">By signing up you accept our:</string>
+    <string name="signUp1">By signing up, you accept our:</string>
     <string name="signUp2">Terms and Conditions</string>
     <string name="signUp3">Privacy Policy</string>
 
@@ -85,8 +102,6 @@
     <string name="navMenu1">My Account</string>
     <string name="navMenu3">Settings</string>
     <string name="navMenu4">Sign Out</string>
-    <string name="navDrawer1">Open Navigation drawer</string>
-    <string name="navDrawer2">Close Navigation drawer</string>
 
     <string name="home1">Home</string>
     <string name="home2">Featured Products</string>
@@ -95,7 +110,7 @@
     <string name="home5">Meal Plans</string>
     <string name="viewAllProd">View All Products</string>
     <string name="viewAllProdCat">View All Product Categories</string>
-    <string name="viewAllMealPlans">View All Meal Plans</string>
+    <string name="viewAllMealPlanCat">View All Meal Plan Categories</string>
     <string name="defaultRecordCaption">No Record</string>
     <string name="noRecordCaptionValue">No %s</string>
 
@@ -125,6 +140,27 @@
     <string name="searchMealPlan">Search Meal Plan</string>
 
     <string name="mealPlanDetails">Meal Plan Details</string>
+    <string name="preparationTime">Preparation Time</string>
+    <string name="cookingTime">Cooking Time</string>
+    <string name="totalTime">Total Time</string>
+    <string name="servings">Servings</string>
+    <string name="minutesText">1 Minute</string>
+    <string name="minutesValue">%d Minute%s</string>
+    <string name="servingsText">1 Person</string>
+    <string name="servingsValue">%d %s</string>
+    <string name="ingredients">Ingredients</string>
+    <string name="instructions">Instructions</string>
+
+    <string name="addMealPlan">Add Meal Plan</string>
+    <string name="enterMealPlan">Please enter the Meal Plan.</string>
+    <string name="mealPlanName">Meal Plan Name</string>
+    <string name="addProductToMealPlan">Add Product to Meal Plan</string>
+    <string name="selectProduct">Please select a product.</string>
+    <string name="enterOverview">Please enter the overview.</string>
+    <string name="invalidOverview">Must not be zero</string>
+    <string name="preparationTimeInMin">Preparation Time in Min</string>
+    <string name="cookingTimeInMin">Cooking Time in Min</string>
+    <string name="servingsPeople">Servings (People)</string>
 
     <string name="chatList">Chat List</string>
     <string name="composeMessage">Compose Message</string>
@@ -163,7 +199,7 @@
     <string name="address">Address</string>
     <string name="addAddress">Add Address</string>
     <string name="updateAddress">Update Address</string>
-    <string name="enterAddress">Please enter your address</string>
+    <string name="enterAddress">Please enter your address.</string>
     <string name="invalidLabel">Label must be between 2 and 16 characters.</string>
     <string name="invalidAddress">Address must at least 2 characters.</string>
 
@@ -173,13 +209,6 @@
     <string name="totalPriceText">₱0.00</string>
     <string name="totalQuantityText">Total Quantity: 0 Product</string>
     <string name="totalQuantityValue">Total Quantity: %d Product%s</string>
-    <string name="orderSummary">Order Summary</string>
-    <string name="checkOutQtyValue">%d Order%s</string>
-    <string name="checkOutQtyText">1 Order</string>
-    <string name="stepText">Step 1 of 2</string>
-    <string name="stepValue">Step %d of %d</string>
-    <string name="contactsNAddress">Contacts &amp; Address</string>
-    <string name="paymentMethod">Payment Method</string>
 
     <string name="checkOut">Check-out</string>
     <string name="deliveryAddress">Delivery Address</string>
@@ -190,31 +219,79 @@
     <string name="delivered">Delivered</string>
     <string name="cancelled">Cancelled</string>
     <string name="orderDetails">Order Details</string>
+    <string name="orderStatus">Order Status</string>
+    <string name="selectOrderStatus">Please select the order status.</string>
+
+    <string name="orderSummary">Order Summary</string>
+    <string name="contacts">Contacts</string>
+    <string name="paymentMethod">Payment Method</string>
+
+    <string name="checkOutQtyValue">%d Order%s</string>
+    <string name="checkOutQtyText">1 Order</string>
+    <string name="stepText">Step 1 of 2</string>
+    <string name="stepValue">Step %d of %d</string>
+
+    <string name="selectDeliveryAddress">Please select your delivery address.</string>
+    <string name="mobileNumbers">Mobile Numbers</string>
+    <string name="mobileNumber1">Mobile Number 1</string>
+    <string name="mobileNumber2">Mobile Number 2 (Optional)</string>
+    <string name="enterMobileNumber">Please enter your Mobile Number</string>
+    <string name="invalidMobileNumber">Invalid Mobile Number</string>
+    <string name="saveMobileNumber">Save Mobile Number</string>
+
+    <string name="cashOnDelivery">Cash on Delivery</string>
+    <string name="GCash">G-Cash</string>
+    <string name="paypal">Paypal</string>
 
     <string name="dashboard">Dashboard</string>
     <string name="orders">Orders</string>
     <string name="users">Users</string>
 
-    <string name="addMealPlan">Add Meal Plan</string>
-
     <string name="searchRole">Search Role</string>
     <string name="role">Role</string>
     <string name="roleType">Role Type</string>
     <string name="addRole">Add Role</string>
+    <string name="updateRole">Update Role</string>
+    <string name="enterRole">Please enter the role.</string>
+
+    <string name="roleName">Role Name</string>
+    <string name="level">Level</string>
+
+    <string name="enterRoleName">Please enter the Role Name.</string>
+    <string name="invalidLevelValue">The level must be lower than your access level (%d).</string>
+    <string name="enterLevel">The level must not be zero.</string>
+
+    <string name="adminRoles">adminRoles</string>
+    <string name="admin">Admin</string>
+    <string name="normalRoles">normalRoles</string>
+    <string name="normal">Normal</string>
+    <string name="specialRoles">specialRoles</string>
+    <string name="special">Special</string>
 
     <string name="countText">0</string>
     <string name="countValue">%d</string>
 
     <string name="addProduct">Add Product</string>
     <string name="updateProduct">Update Product</string>
-    <string name="enterProduct">Please enter the product</string>
+    <string name="enterProduct">Please enter the product.</string>
     <string name="imageLink">Image Link</string>
-    <string name="qtyProductDescriptionText">1 Description</string>
-    <string name="qtyProductCategoriesText">1 Category</string>
-    <string name="qtyProductDescriptionValue">%d Description%s</string>
-    <string name="qtyProductCategoriesValue">%d Categor%s</string>
+    <string name="qtyProdDescValue">%d Description%s</string>
+    <string name="qtyProdCatValue">%d Categor%s</string>
+    <string name="noDescription">No Description</string>
+    <string name="noCategory">No Category</string>
+    <string name="description">Description</string>
+    <string name="descriptions">Descriptions</string>
     <string name="invalidProductName">Product Name must be at least 2.</string>
     <string name="invalidPrice">Price must at least 10 in peso.</string>
+
+    <string name="enterValue">Please enter a value.</string>
+    <string name="valueText">Value</string>
+
+    <string name="selectCategories">Please select the categories.</string>
+    <string name="selectRoles">Please select the roles.</string>
+    <string name="selectRoleType">Please select the role type.</string>
+
+    <string name="deactivated">Deactivated</string>
 
     <string name="insertDetailsNote">Insert Details Here</string>
 

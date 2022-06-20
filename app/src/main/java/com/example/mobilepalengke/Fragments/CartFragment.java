@@ -63,7 +63,7 @@ public class CartFragment extends Fragment {
     CartProductAdapter cartProductAdapter;
 
     String uid;
-    boolean isListeningCheck = true;
+    boolean isCheckListening = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,7 +126,7 @@ public class CartFragment extends Fragment {
         recyclerView.setAdapter(cartProductAdapter);
 
         cbSelectAll.setOnCheckedChangeListener((compoundButton, b) -> {
-            if (isListeningCheck) {
+            if (isCheckListening) {
                 recyclerView.smoothScrollToPosition(0);
                 recyclerView.smoothScrollToPosition(cartProducts.size() - 1);
             }
@@ -213,7 +213,7 @@ public class CartFragment extends Fragment {
                     if (snapshot.exists())
                         for (CartProduct cartProduct : cartProducts) {
                             Product product = snapshot.child(cartProduct.getId()).getValue(Product.class);
-                            if (product != null) products.add(product);
+                            if (product != null && !product.isDeactivated()) products.add(product);
                         }
 
                     if (cartProducts.size() == 0)
@@ -254,7 +254,7 @@ public class CartFragment extends Fragment {
     @Override
     public void onResume() {
         isListening = true;
-        cartProductsQuery.addValueEventListener(getCartValueListener());
+        cartProductsQuery.addListenerForSingleValueEvent(getCartValueListener());
 
         super.onResume();
     }

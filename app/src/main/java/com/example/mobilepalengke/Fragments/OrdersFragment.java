@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.mobilepalengke.Adapters.CheckOutAdapter;
+import com.example.mobilepalengke.Adapters.OrderAdapter;
 import com.example.mobilepalengke.DataClasses.Order;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
@@ -24,6 +24,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -31,7 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class CheckOutFragment extends Fragment {
+public class OrdersFragment extends Fragment {
 
     RecyclerView recyclerView;
     TextView tvCheckOutCaption;
@@ -51,7 +52,7 @@ public class CheckOutFragment extends Fragment {
     List<Order> orders = new ArrayList<>();
     List<Product> products = new ArrayList<>();
 
-    CheckOutAdapter checkOutAdapter;
+    OrderAdapter orderAdapter;
 
     String uid;
 
@@ -74,7 +75,7 @@ public class CheckOutFragment extends Fragment {
             uid = firebaseUser.getUid();
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
-        ordersQuery = firebaseDatabase.getReference("orders");
+        ordersQuery = firebaseDatabase.getReference("orders").orderByChild("id");
         productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
 
         loadingDialog.showDialog();
@@ -82,9 +83,9 @@ public class CheckOutFragment extends Fragment {
         ordersQuery.addValueEventListener(getOrdersValueListener());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
-        checkOutAdapter = new CheckOutAdapter(context, orders, products);
+        orderAdapter = new OrderAdapter(context, orders, products);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(checkOutAdapter);
+        recyclerView.setAdapter(orderAdapter);
 
         return view;
     }
@@ -103,7 +104,7 @@ public class CheckOutFragment extends Fragment {
                                 orders.add(order);
                         }
 
-                    loadingDialog.dismissDialog();
+                    Collections.reverse(orders);
 
                     productsQuery.addValueEventListener(getProductsValueListener());
                 }
@@ -132,7 +133,7 @@ public class CheckOutFragment extends Fragment {
                     if (snapshot.exists())
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             Product product = dataSnapshot.getValue(Product.class);
-                            if (product != null)
+                            if (product != null && !product.isDeactivated())
                                 products.add(product);
                         }
 
@@ -142,7 +143,7 @@ public class CheckOutFragment extends Fragment {
                         tvCheckOutCaption.setVisibility(View.GONE);
                     tvCheckOutCaption.bringToFront();
 
-                    checkOutAdapter.notifyDataSetChanged();
+                    orderAdapter.notifyDataSetChanged();
 
                     loadingDialog.dismissDialog();
                 }
@@ -163,7 +164,7 @@ public class CheckOutFragment extends Fragment {
     @Override
     public void onResume() {
         isListening = true;
-        ordersQuery.addValueEventListener(getOrdersValueListener());
+        ordersQuery.addListenerForSingleValueEvent(getOrdersValueListener());
 
         super.onResume();
     }

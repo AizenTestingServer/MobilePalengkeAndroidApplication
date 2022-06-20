@@ -6,12 +6,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.example.mobilepalengke.Adapters.ProductAdapter;
+import com.example.mobilepalengke.DataClasses.Cart;
+import com.example.mobilepalengke.DataClasses.CartProduct;
 import com.example.mobilepalengke.DataClasses.MealPlan;
 import com.example.mobilepalengke.DataClasses.MealPlanCategory;
+import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.R;
@@ -25,17 +30,21 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MealPlanDetailsActivity extends AppCompatActivity {
 
-    ImageView cartIconImage;
-    Button btnAddToCart;
-    TextView tvCartCount;
+    ImageView cartIconImage, imgMealPlan;
+    TextView tvCartCount, tvLabel, tvDescription, textView6, textView7, textView8, textView9,
+            tvIngredients, tvInstructions, tvProductCaption;
+    RecyclerView recyclerView;
 
     Context context;
 
@@ -47,18 +56,24 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
 
     boolean isListening = true;
 
-    Query mealPlansQuery, mealPlanCategoriesQuery, cartProductsQuery;
+    Query mealPlansQuery, mealPlanCategoriesQuery, productsQuery, cartProductsQuery;
 
     List<MealPlanCategory> mealPlanCategories = new ArrayList<>();
 
     MealPlan currentMealPlan;
 
     List<MealPlan> relatedMealPlans = new ArrayList<>();
+    List<Product> products = new ArrayList<>();
+    List<CartProduct> cartProducts = new ArrayList<>();
+
+    ProductAdapter productAdapter;
 
     String mealPlanId;
 
     String uid;
     int overallCartCount = 0;
+
+    boolean isCartExisting = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +82,17 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
 
         cartIconImage = findViewById(R.id.cartIconImage);
         tvCartCount = findViewById(R.id.tvCartCount);
-
-        btnAddToCart = findViewById(R.id.btnAddToCart);
+        imgMealPlan = findViewById(R.id.imgMealPlan);
+        tvLabel = findViewById(R.id.tvLabel);
+        tvDescription = findViewById(R.id.tvDescription);
+        textView6 = findViewById(R.id.textView6);
+        textView7 = findViewById(R.id.textView7);
+        textView8 = findViewById(R.id.textView8);
+        textView9 = findViewById(R.id.textView9);
+        tvIngredients = findViewById(R.id.tvIngredients);
+        tvInstructions = findViewById(R.id.tvInstructions);
+        recyclerView = findViewById(R.id.recyclerView);
+        tvProductCaption = findViewById(R.id.tvProductCaption);
 
         context = MealPlanDetailsActivity.this;
 
@@ -85,16 +109,66 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         mealPlansQuery = firebaseDatabase.getReference("mealPlans").orderByChild("name");
         mealPlanCategoriesQuery = firebaseDatabase.getReference("mealPlanCategories").orderByChild("name");
+        productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid);
 
         loadingDialog.showDialog();
         isListening = true;
         mealPlansQuery.addValueEventListener(getMealPlanValueListener());
 
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
+        productAdapter = new ProductAdapter(context, products);
+        productAdapter.setProductAdapterListener(this::addToCart);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(productAdapter);
+
         cartIconImage.setOnClickListener(view -> {
             Intent intent = new Intent(context, CartActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void addToCart(Product product, int quantity) {
+        loadingDialog.showDialog();
+
+        int initialQty = 0;
+
+        for (CartProduct cartProduct : cartProducts)
+            if (cartProduct.getId().equals(product.getId())) {
+                initialQty = cartProduct.getQuantity();
+                break;
+            }
+
+        CartProduct cartProduct = new CartProduct(product.getId(), initialQty + quantity);
+
+        if (isCartExisting)
+            cartProductsQuery.getRef().child("cartProducts").child(product.getId())
+                    .setValue(cartProduct).addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Toast.makeText(
+                                    context,
+                                    product.getName() + " (" + quantity + ") was added to cart",
+                                    Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            String error = "";
+                            if (task.getException() != null)
+                                error = task.getException().toString();
+
+                            messageDialog.setTextCaption(error);
+                            messageDialog.setTextType(2);
+                            messageDialog.showDialog();
+                        }
+
+                        loadingDialog.dismissDialog();
+                    });
+        else {
+            Map<String, CartProduct> mapCartProduct = new HashMap<>();
+            mapCartProduct.put(product.getId(), cartProduct);
+
+            Cart cart = new Cart(uid, mapCartProduct);
+            cartProductsQuery.getRef().setValue(cart);
+        }
     }
 
     private ValueEventListener getMealPlanValueListener() {
@@ -103,24 +177,83 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
-
-                    if (snapshot.exists())
+                    if (snapshot.exists()) {
                         currentMealPlan = snapshot.child(mealPlanId).getValue(MealPlan.class);
 
-                    for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                        MealPlan mealPlan = dataSnapshot.getValue(MealPlan.class);
-                        if (mealPlan != null && mealPlan.getCategories() != null)
-                            for (Map.Entry<String, String> mapMealPlanCategories : mealPlan.getCategories().entrySet())
-                                if (currentMealPlan != null && !currentMealPlan.getId().equals(mealPlan.getId()) &&
-                                        currentMealPlan.getCategories().containsValue(mapMealPlanCategories.getValue())) {
-                                    relatedMealPlans.add(mealPlan);
-                                    break;
-                                }
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            MealPlan mealPlan = dataSnapshot.getValue(MealPlan.class);
+                            if (mealPlan != null && mealPlan.getCategories() != null)
+                                for (Map.Entry<String, String> mapMealPlanCategories : mealPlan.getCategories().entrySet())
+                                    if (currentMealPlan != null && !currentMealPlan.getId().equals(mealPlan.getId()) &&
+                                            currentMealPlan.getCategories() != null &&
+                                            currentMealPlan.getCategories().containsValue(mapMealPlanCategories.getValue())) {
+                                        relatedMealPlans.add(mealPlan);
+                                        break;
+                                    }
+                        }
                     }
                 }
 
                 if (currentMealPlan != null) {
-                    //Selected Meal Plan Details here
+                    try {
+                        Glide.with(context).load(currentMealPlan.getImg()).centerCrop().placeholder(R.drawable.ic_image_blue).
+                                error(R.drawable.ic_broken_image_red).into(imgMealPlan);
+                    } catch (Exception ex) {}
+
+                    tvLabel.setText(currentMealPlan.getName());
+
+                    String description = currentMealPlan.getDescription() != null ?
+                            currentMealPlan.getDescription() : "";
+
+                    if (description.trim().length() > 0)
+                        tvDescription.setVisibility(View.VISIBLE);
+                    else tvDescription.setVisibility(View.GONE);
+
+                    tvDescription.setText(description.trim());
+
+                    int prepTime = currentMealPlan.getPrepTime();
+                    int cookTime = currentMealPlan.getCookTime();
+                    int totalTime = prepTime + cookTime;
+                    int servings = currentMealPlan.getServings();
+
+                    textView6.setText(getString(R.string.minutesValue, prepTime,
+                            prepTime > 1 ? "s" : ""));
+                    textView7.setText(getString(R.string.minutesValue, cookTime,
+                            cookTime > 1 ? "s" : ""));
+                    textView8.setText(getString(R.string.minutesValue, totalTime,
+                            totalTime > 1 ? "s" : ""));
+                    textView9.setText(getString(R.string.servingsValue, servings,
+                            servings > 1 ? "people" : "person"));
+
+                    List<String> ingredrientList = new ArrayList<>();
+                    String ingredients = "";
+
+                    if (currentMealPlan.getIngredients() != null)
+                        ingredrientList = new ArrayList<>(currentMealPlan.getIngredients().values());
+
+                    ingredrientList.sort(String::compareToIgnoreCase);
+
+                    for (String ingredient : ingredrientList)
+                        ingredients += "• " + ingredient + "\n";
+
+                    if (ingredients.trim().length() > 0)
+                        tvIngredients.setText(ingredients.trim());
+                    else tvIngredients.setText(getString(R.string.defaultRecordCaption));
+
+                    List<String> instructionList = new ArrayList<>();
+                    String instructions = "";
+
+                    if (currentMealPlan.getInstructions() != null)
+                        instructionList = new ArrayList<>(currentMealPlan.getInstructions().values());
+
+                    instructionList.sort(String::compareToIgnoreCase);
+
+                    for (String instruction : instructionList)
+                        instructions += "• " + instruction + "\n";
+
+                    if (instructions.trim().length() > 0)
+                        tvInstructions.setText(instructions.trim());
+                    else tvInstructions.setText(getString(R.string.defaultRecordCaption));
                 }
 
                 Collections.shuffle(relatedMealPlans);
@@ -135,7 +268,7 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("TAG: " + context.getClass(), "productsQuery:onCancelled", error.toException());
+                Log.e("TAG: " + context.getClass(), "mealPlansQuery:onCancelled", error.toException());
                 loadingDialog.dismissDialog();
 
                 messageDialog.setTextCaption("Failed to get the products.");
@@ -160,12 +293,13 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
                     if (snapshot.exists()) {
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
                             MealPlanCategory mealPlanCategory = dataSnapshot.getValue(MealPlanCategory.class);
-                            if (mealPlanCategory != null && categoryIds.contains(mealPlanCategory.getId()))
+                            if (mealPlanCategory != null && !mealPlanCategory.isDeactivated() &&
+                                    categoryIds.contains(mealPlanCategory.getId()))
                                 mealPlanCategories.add(mealPlanCategory);
                         }
                     }
 
-                    cartProductsQuery.addValueEventListener(getCartValueListener());
+                    productsQuery.addValueEventListener(getProdValueListener());
                 }
             }
 
@@ -181,15 +315,72 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getProdValueListener() {
+        return new ValueEventListener() {
+            @SuppressLint("NotifyDataSetChanged")
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    products.clear();
+
+                    if (snapshot.exists()) {
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
+                            Product product = dataSnapshot.getValue(Product.class);
+                            if (product != null && product.getCategories() != null && !product.isDeactivated())
+                                if (currentMealPlan.getProducts() != null) {
+                                    for (Map.Entry<String, String> mapProduct : currentMealPlan.getProducts().entrySet()) {
+                                        if (mapProduct.getValue().equals(product.getId())) {
+                                            products.add(product);
+                                            break;
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+
+                if (products.size() == 0)
+                    tvProductCaption.setVisibility(View.VISIBLE);
+                else tvProductCaption.setVisibility(View.GONE);
+                tvProductCaption.bringToFront();
+
+                productAdapter.notifyDataSetChanged();
+
+                cartProductsQuery.addValueEventListener(getCartValueListener());
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "productsQuery:onCancelled", error.toException());
+                loadingDialog.dismissDialog();
+
+                messageDialog.setTextCaption("Failed to get the products.");
+                messageDialog.setTextType(2);
+                messageDialog.showDialog();
+            }
+        };
+    }
+
     private ValueEventListener getCartValueListener() {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (isListening) {
                     overallCartCount = 0;
+                    cartProducts.clear();
 
-                    if (snapshot.child("cartProducts").exists())
+                    if (snapshot.child("cartProducts").exists()) {
+                        isCartExisting = true;
+
                         overallCartCount = (int) snapshot.child("cartProducts").getChildrenCount();
+
+                        for (DataSnapshot dataSnapshot : snapshot.child("cartProducts").getChildren()) {
+                            CartProduct cartProduct = dataSnapshot.getValue(CartProduct.class);
+                            if (cartProduct != null)
+                                cartProducts.add(cartProduct);
+                        }
+                    } else
+                        isCartExisting = false;
 
                     if (overallCartCount == 0)
                         tvCartCount.setVisibility(View.GONE);
@@ -216,7 +407,7 @@ public class MealPlanDetailsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
-        mealPlansQuery.addValueEventListener(getMealPlanValueListener());
+        mealPlansQuery.addListenerForSingleValueEvent(getMealPlanValueListener());
 
         super.onResume();
     }

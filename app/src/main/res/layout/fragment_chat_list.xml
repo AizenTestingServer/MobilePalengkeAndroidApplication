@@ -127,7 +127,7 @@
 
             <TextView
                 android:id="@+id/btnChangeRole"
-                style="@style/MaterialBtnStyle.Button2"
+                style="@style/FlatButtonStyle3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -345,7 +345,7 @@
 
             <TextView
                 android:id="@+id/btnChangeCategory"
-                style="@style/MaterialBtnStyle.Button2"
+                style="@style/FlatButtonStyle3"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
