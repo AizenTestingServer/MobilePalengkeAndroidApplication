@@ -2,6 +2,8 @@ package com.example.mobilepalengke.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -14,13 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.ChatMessageAdapter;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.Chat;
 import com.example.mobilepalengke.DataClasses.Message;
 import com.example.mobilepalengke.DataClasses.NotificationItem;
 import com.example.mobilepalengke.DataClasses.Role;
 import com.example.mobilepalengke.DataClasses.User;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -56,6 +61,8 @@ public class ChatActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     String uid, endPointUid, chatId, notificationId, endPointNotificationId;
 
@@ -66,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
 
     String messageText;
 
-    Query userQuery, endPointUserQuery, adminRolesQuery, chatQuery, messagesQuery, notificationsQuery, endPointNotificationsQuery;
+    Query userQuery, endPointUserQuery, adminRolesQuery, chatQuery, messagesQuery, notificationsQuery, endPointNotificationsQuery, appInfoQuery;
 
     User user, endPointUser;
     Chat currentChat;
@@ -97,6 +104,8 @@ public class ChatActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         endPointUid = getIntent().getStringExtra("endPointUid");
         chatId = getIntent().getStringExtra("chatId");
@@ -114,10 +123,12 @@ public class ChatActivity extends AppCompatActivity {
         chatQuery = firebaseDatabase.getReference("chatList");
         notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
         endPointNotificationsQuery = firebaseDatabase.getReference("notifications").child(endPointUid);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         userQuery.addValueEventListener(getUserValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         chatMessageAdapter = new ChatMessageAdapter(context, messages, uid);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, true);
@@ -388,20 +399,38 @@ public class ChatActivity extends AppCompatActivity {
 
     private void sendMessage() {
         if (messageText != null && messageText.trim().length() > 0) {
-            if (chatId == null)
-                chatId = "chat" + ((String.valueOf(overallChatCount + 1).length() < 2) ? "0" + (overallChatCount + 1)
-                        : (int) (overallChatCount + 1));
+            if (chatId == null) {
+                StringBuilder idBuilder = new StringBuilder("chat");
 
-            String msgId = "msg" + ((String.valueOf(messages.size() + 1).length() < 2) ? "0" + (messages.size() + 1)
-                    : (int) (messages.size() + 1));
+                for (int i = 0; i < 7 - String.valueOf(overallChatCount + 1).length(); i++)
+                    idBuilder.append("0");
+                idBuilder.append(overallChatCount + 1);
+
+                chatId = String.valueOf(idBuilder);
+            }
+
+            String msgId;
+            StringBuilder idBuilder = new StringBuilder("msg");
+
+            for (int i = 0; i < 7 - String.valueOf(messages.size() + 1).length(); i++)
+                idBuilder.append("0");
+            idBuilder.append(messages.size() + 1);
+
+            msgId = String.valueOf(idBuilder);
 
             String curDateAndTime = simpleDateFormat.format(new Date());
 
             Message message = new Message(msgId, uid, curDateAndTime, messageText);
 
-            if (endPointNotificationId == null)
-                endPointNotificationId = "notif" + ((String.valueOf(overallEndUserNotificationCount + 1).length() < 2) ?
-                        "0" + (overallEndUserNotificationCount + 1) : (int) (overallEndUserNotificationCount + 1));
+            if (endPointNotificationId == null) {
+                idBuilder = new StringBuilder("notif");
+
+                for (int i = 0; i < 7 - String.valueOf(overallEndUserNotificationCount + 1).length(); i++)
+                    idBuilder.append("0");
+                idBuilder.append(overallEndUserNotificationCount + 1);
+
+                endPointNotificationId = String.valueOf(idBuilder);
+            }
 
             String notifDescription = "Chat with " + fullName,
                     notifTitle = "Mobile Palengke Chat",
@@ -460,6 +489,61 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     private OnCompleteListener<Void> getMSGSentOnCompleteListener() {
         return task -> {
             if (task.isSuccessful())
@@ -480,6 +564,7 @@ public class ChatActivity extends AppCompatActivity {
     public void onResume() {
         isListening = true;
         endPointUserQuery.addListenerForSingleValueEvent(getEndPointUserValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         if (chatId != null)
             firebaseDatabase.getReference("chatList").child(chatId)

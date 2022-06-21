@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,13 +21,16 @@ import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.OrderProductGridAdapter;
 import com.example.mobilepalengke.DataClasses.Address;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.CheckOutProduct;
 import com.example.mobilepalengke.DataClasses.NotificationItem;
 import com.example.mobilepalengke.DataClasses.Order;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DialogClasses.ConfirmationDialog;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -65,13 +69,15 @@ public class OrderDetailsActivity extends AppCompatActivity {
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
     ConfirmationDialog confirmationDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
 
     boolean isListening = true;
 
-    Query orderQuery, productsQuery, notificationsQuery;
+    Query orderQuery, productsQuery, notificationsQuery, appInfoQuery;
 
     Order currentOrder;
 
@@ -114,6 +120,8 @@ public class OrderDetailsActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
         confirmationDialog = new ConfirmationDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -127,6 +135,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
         orderQuery = firebaseDatabase.getReference("orders").child(orderId);
         productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
         notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         if (notificationId != null) {
             isListening = false;
@@ -137,6 +146,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
         loadingDialog.showDialog();
         isListening = true;
         orderQuery.addValueEventListener(getOrderValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         orderProductGridAdapter = new OrderProductGridAdapter(context, checkOutProducts, products);
@@ -166,8 +176,14 @@ public class OrderDetailsActivity extends AppCompatActivity {
         confirmationDialog.setDialogListener(() -> {
             loadingDialog.showDialog();
 
-            String notificationId = "notif" + ((String.valueOf(overallNotificationCount + 1).length() < 2) ?
-                    "0" + (overallNotificationCount + 1) : (int) (overallNotificationCount + 1));
+            String notificationId;
+            StringBuilder idBuilder = new StringBuilder("notif");
+
+            for (int i = 0; i < 7 - String.valueOf(overallNotificationCount + 1).length(); i++)
+                idBuilder.append("0");
+            idBuilder.append(overallNotificationCount + 1);
+
+            notificationId = String.valueOf(idBuilder);
 
             String notifDescription = "Order Cancelled",
                     notifTitle = "Mobile Palengke Order",
@@ -349,6 +365,61 @@ public class OrderDetailsActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     private void showNotification(NotificationItem notification, int index) {
         NotificationManager notificationManager = getNotificationManager(notification);
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_head);
@@ -452,6 +523,7 @@ public class OrderDetailsActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         isListening = true;
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }

@@ -131,9 +131,15 @@ public class StringValuesDialog {
         btnConfirm.setOnClickListener(view -> {
             mapValues.clear();
             for (String value : values) {
-                String keyName = String.valueOf(mapValues.size() + 1).length() < 2
-                        ? "0" + (mapValues.size() + 1)
-                        : String.valueOf((mapValues.size() + 1));
+                String keyName;
+
+                StringBuilder idBuilder = new StringBuilder();
+
+                for (int i = 0; i < 7 - String.valueOf(mapValues.size() + 1).length(); i++)
+                    idBuilder.append("0");
+                idBuilder.append(mapValues.size() + 1);
+
+                keyName = String.valueOf(idBuilder);
 
                 mapValues.put(keyName, value);
             }

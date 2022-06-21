@@ -40,6 +40,7 @@
     <string name="btnUpdateIngredients">Update Ingredients</string>
     <string name="btnRemoveFromMealPlan">Remove from Meal Plan</string>
     <string name="btnAddValue">Add Value</string>
+    <string name="btnDownload">Download</string>
 
     <string name="welcome1">Welcome to Mobile Palengke</string>
     <string name="welcome2">Here to make your life easier.\nJust tap your order and we\'ll deliver</string>
@@ -292,6 +293,16 @@
     <string name="selectRoleType">Please select the role type.</string>
 
     <string name="deactivated">Deactivated</string>
+
+    <string name="newVersionPrompt">
+        You are using the old version of Mobile Palengke.\n
+        Please download the new version: v%.2f.
+    </string>
+    <string name="statusPrompt">
+        Sorry, the Mobile Palengke is under\n
+        %s.\n
+        Please come back again later.
+    </string>
 
     <string name="insertDetailsNote">Insert Details Here</string>
 

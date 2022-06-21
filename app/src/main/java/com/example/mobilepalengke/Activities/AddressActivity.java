@@ -2,6 +2,8 @@ package com.example.mobilepalengke.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,9 +13,12 @@ import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.AddressAdapter;
 import com.example.mobilepalengke.DataClasses.Address;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DialogClasses.AddressDialog;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -42,6 +47,8 @@ public class AddressActivity extends AppCompatActivity {
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
     AddressDialog addressDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
@@ -49,7 +56,7 @@ public class AddressActivity extends AppCompatActivity {
 
     boolean isListening = true;
 
-    Query addressQuery;
+    Query addressQuery, appInfoQuery;
 
     List<Address> addressList = new ArrayList<>();
 
@@ -72,6 +79,8 @@ public class AddressActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
         addressDialog = new AddressDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -80,10 +89,12 @@ public class AddressActivity extends AppCompatActivity {
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         addressQuery = firebaseDatabase.getReference("addressList").orderByChild("id");
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         addressQuery.addValueEventListener(getAddressValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         addressAdapter = new AddressAdapter(context, addressList);
@@ -103,10 +114,14 @@ public class AddressActivity extends AppCompatActivity {
             boolean isAddMode = false;
 
             if (addressId == null) {
-                addressId = "add"
-                        + ((String.valueOf(overallAddressCount + 1).length() < 2) ?
-                        "0" + (overallAddressCount + 1) :
-                        (int) (overallAddressCount + 1));
+                StringBuilder idBuilder = new StringBuilder("add");
+
+                for (int i = 0; i < 7 - String.valueOf(overallAddressCount + 1).length(); i++)
+                    idBuilder.append("0");
+                idBuilder.append(overallAddressCount + 1);
+
+                addressId = String.valueOf(idBuilder);
+
                 isAddMode = true;
             }
 
@@ -178,5 +193,83 @@ public class AddressActivity extends AppCompatActivity {
                 messageDialog.showDialog();
             }
         };
+    }
+
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
+    @Override
+    public void onResume() {
+        isListening = true;
+        addressQuery.addValueEventListener(getAddressValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
+
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        isListening = false;
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        isListening = false;
+
+        super.onDestroy();
     }
 }

@@ -299,17 +299,65 @@ public class ChatListFragment extends Fragment {
                                         new ArrayList<>(chat.getParticipants().values()) :
                                         new ArrayList<>();
 
-                                if (participantsId.contains(uid)) {
+                                if (participantsId.contains(uid))
                                     chatList.add(chat);
-                                    List<Message> messagesTemp = chat.getMessages() != null ?
-                                            new ArrayList<>(chat.getMessages().values()) :
-                                            new ArrayList<>();
-                                    messagesTemp.sort((message, t1) -> message.getId().compareToIgnoreCase(t1.getId()));
-                                    Collections.reverse(messagesTemp);
-                                    messages.add(messagesTemp.get(0));
-                                }
                             }
                         }
+                    }
+
+                    chatList.sort((chat, t1) -> {
+                        List<Message> messagesTemp = chat.getMessages() != null ?
+                                new ArrayList<>(chat.getMessages().values()) :
+                                new ArrayList<>();
+                        messagesTemp.sort((message, t2) -> message.getId().compareToIgnoreCase(t2.getId()));
+                        Collections.reverse(messagesTemp);
+                        Message messageTemp = messagesTemp.get(0);
+
+                        String timestamp = messageTemp.getTimestamp();
+                        timestamp = timestamp.replaceAll("-", "");
+                        String time = timestamp.split(" ")[1]; time = time.split(":")[0];
+                        String timeType = timestamp.split(" ")[2];
+                        int timeValue = Integer.parseInt(time);
+                        if (timeType.equalsIgnoreCase("PM") && timeValue != 12)
+                            timeValue += 12;
+                        else if (timeValue == 12) timeValue = 0;
+
+                        messagesTemp = t1.getMessages() != null ?
+                                new ArrayList<>(t1.getMessages().values()) :
+                                new ArrayList<>();
+                        messagesTemp.sort((message, t2) -> message.getId().compareToIgnoreCase(t2.getId()));
+                        Collections.reverse(messagesTemp);
+                        messageTemp = messagesTemp.get(0);
+
+                        String timestamp2 = messageTemp.getTimestamp();
+                        timestamp2 = timestamp2.replaceAll("-", "");
+                        String time2 = timestamp2.split(" ")[1]; time2 = time2.split(":")[0];
+                        String timeType2 = timestamp2.split(" ")[2];
+                        int timeValue2 = Integer.parseInt(time2);
+                        if (timeType2.equalsIgnoreCase("PM") && timeValue2 != 12)
+                            timeValue2 += 12;
+                        else if (timeValue2 == 12) timeValue2 = 0;
+
+                        time = String.valueOf(timeValue).length() < 2 ?
+                                "0" + timeValue : String.valueOf(timeValue);
+                        time += timestamp.split(" ")[1]; time = time.split(":")[1];
+                        timestamp = timestamp.split(" ")[0] + time;
+
+                        time2 = String.valueOf(timeValue2).length() < 2 ?
+                                "0" + timeValue2 : String.valueOf(timeValue2);
+                        time2 += timestamp2.split(" ")[1]; time2 = time2.split(":")[1];
+                        timestamp2 = timestamp2.split(" ")[0] + time2;
+
+                        return timestamp2.compareToIgnoreCase(timestamp);
+                    });
+
+                    for (Chat chat : chatList) {
+                        List<Message> messagesTemp = chat.getMessages() != null ?
+                                new ArrayList<>(chat.getMessages().values()) :
+                                new ArrayList<>();
+                        messagesTemp.sort((message, t1) -> message.getId().compareToIgnoreCase(t1.getId()));
+                        Collections.reverse(messagesTemp);
+                        messages.add(messagesTemp.get(0));
                     }
 
                     usersQuery.addValueEventListener(getUsersValueListener());

@@ -208,17 +208,20 @@ public class HomeFragment extends Fragment {
         });
 
         imgFacebook.setOnClickListener(view1 -> {
-            Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(getString(R.string.mp_facebook_url)));
+            Intent intent = new Intent("android.intent.action.VIEW",
+                    Uri.parse(getString(R.string.mp_facebook_url)));
             startActivity(intent);
         });
 
         imgTwitter.setOnClickListener(view1 -> {
-            Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(getString(R.string.mp_twitter_url)));
+            Intent intent = new Intent("android.intent.action.VIEW",
+                    Uri.parse(getString(R.string.mp_twitter_url)));
             startActivity(intent);
         });
 
         imgInstagram.setOnClickListener(view1 -> {
-            Intent intent = new Intent("android.intent.action.VIEW", Uri.parse(getString(R.string.mp_instagram_url)));
+            Intent intent = new Intent("android.intent.action.VIEW",
+                    Uri.parse(getString(R.string.mp_instagram_url)));
             startActivity(intent);
         });
 

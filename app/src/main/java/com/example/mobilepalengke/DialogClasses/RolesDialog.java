@@ -69,11 +69,16 @@ public class RolesDialog {
 
                 mapSelectedItems.clear();
                 for (CheckableItem selectedCheckableItem : selectedCheckableItems) {
-                    String prodCatIndex = "role" + ((String.valueOf(mapSelectedItems.size() + 1).length() < 2)
-                            ? "0" + (mapSelectedItems.size() + 1)
-                            : (int) (mapSelectedItems.size() + 1));
+                    String roleIndex;
+                    StringBuilder idBuilder = new StringBuilder("role");
 
-                    mapSelectedItems.put(prodCatIndex, selectedCheckableItem.getId());
+                    for (int i = 0; i < 7 - String.valueOf(mapSelectedItems.size() + 1).length(); i++)
+                        idBuilder.append("0");
+                    idBuilder.append(mapSelectedItems.size() + 1);
+
+                    roleIndex = String.valueOf(idBuilder);
+
+                    mapSelectedItems.put(roleIndex, selectedCheckableItem.getId());
                 }
 
                 btnConfirm.setVisibility(View.VISIBLE);

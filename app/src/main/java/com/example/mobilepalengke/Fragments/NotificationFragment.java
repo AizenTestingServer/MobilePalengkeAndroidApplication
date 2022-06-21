@@ -23,7 +23,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -102,7 +101,37 @@ public class NotificationFragment extends Fragment {
                         }
                     }
 
-                    Collections.reverse(notifications);
+                    notifications.sort((notificationItem, t1) -> {
+                        String timestamp = notificationItem.getTimestamp();
+                        timestamp = timestamp.replaceAll("-", "");
+                        String time = timestamp.split(" ")[1]; time = time.split(":")[0];
+                        String timeType = timestamp.split(" ")[2];
+                        int timeValue = Integer.parseInt(time);
+                        if (timeType.equalsIgnoreCase("PM") && timeValue != 12)
+                            timeValue += 12;
+                        else if (timeValue == 12) timeValue = 0;
+
+                        String timestamp2 = t1.getTimestamp();
+                        timestamp2 = timestamp2.replaceAll("-", "");
+                        String time2 = timestamp2.split(" ")[1]; time2 = time2.split(":")[0];
+                        String timeType2 = timestamp2.split(" ")[2];
+                        int timeValue2 = Integer.parseInt(time2);
+                        if (timeType2.equalsIgnoreCase("PM") && timeValue2 != 12)
+                            timeValue2 += 12;
+                        else if (timeValue2 == 12) timeValue2 = 0;
+
+                        time = String.valueOf(timeValue).length() < 2 ?
+                                "0" + timeValue : String.valueOf(timeValue);
+                        time += timestamp.split(" ")[1]; time = time.split(":")[1];
+                        timestamp = timestamp.split(" ")[0] + time;
+
+                        time2 = String.valueOf(timeValue2).length() < 2 ?
+                                "0" + timeValue2 : String.valueOf(timeValue2);
+                        time2 += timestamp2.split(" ")[1]; time2 = time2.split(":")[1];
+                        timestamp2 = timestamp2.split(" ")[0] + time2;
+
+                        return timestamp2.compareToIgnoreCase(timestamp);
+                    });
 
                     if (notifications.size() == 0)
                         tvNotificationCaption.setVisibility(View.VISIBLE);

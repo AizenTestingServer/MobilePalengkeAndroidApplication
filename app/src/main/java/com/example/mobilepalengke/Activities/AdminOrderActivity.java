@@ -2,17 +2,22 @@ package com.example.mobilepalengke.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.example.mobilepalengke.Adapters.AdminOrderAdapter;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.Order;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DataClasses.User;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -38,12 +43,14 @@ public class AdminOrderActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseDatabase firebaseDatabase;
 
     boolean isListening = true;
 
-    Query ordersQuery, productsQuery, usersQuery, rolesQuery;
+    Query ordersQuery, productsQuery, usersQuery, rolesQuery, appInfoQuery;
 
     List<Order> orders = new ArrayList<>();
     List<Product> products = new ArrayList<>();
@@ -63,16 +70,20 @@ public class AdminOrderActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         ordersQuery = firebaseDatabase.getReference("orders");
         productsQuery = firebaseDatabase.getReference("products").orderByChild("name");
         usersQuery = firebaseDatabase.getReference("users");
         rolesQuery = firebaseDatabase.getReference();
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         ordersQuery.addValueEventListener(getOrdersValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         adminOrderAdapter = new AdminOrderAdapter(context, orders, products, users);
@@ -181,5 +192,82 @@ public class AdminOrderActivity extends AppCompatActivity {
                 messageDialog.showDialog();
             }
         };
+    }
+
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
+    @Override
+    public void onResume() {
+        isListening = true;
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
+
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        isListening = false;
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        isListening = false;
+
+        super.onDestroy();
     }
 }

@@ -69,9 +69,14 @@ public class ProductCategoriesDialog {
 
                 mapSelectedItems.clear();
                 for (CheckableItem selectedCheckableItem : selectedCheckableItems) {
-                    String prodCatIndex = "prodCat" + ((String.valueOf(mapSelectedItems.size() + 1).length() < 2)
-                            ? "0" + (mapSelectedItems.size() + 1)
-                            : (int) (mapSelectedItems.size() + 1));
+                    String prodCatIndex;
+                    StringBuilder idBuilder = new StringBuilder("prodCat");
+
+                    for (int i = 0; i < 7 - String.valueOf(mapSelectedItems.size() + 1).length(); i++)
+                        idBuilder.append("0");
+                    idBuilder.append(mapSelectedItems.size() + 1);
+
+                    prodCatIndex = String.valueOf(idBuilder);
 
                     mapSelectedItems.put(prodCatIndex, selectedCheckableItem.getId());
                 }

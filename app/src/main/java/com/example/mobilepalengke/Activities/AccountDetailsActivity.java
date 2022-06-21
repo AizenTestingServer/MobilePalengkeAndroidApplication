@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -11,13 +12,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.Role;
 import com.example.mobilepalengke.DataClasses.User;
 import com.example.mobilepalengke.DialogClasses.ChangeEmailAddressDialog;
 import com.example.mobilepalengke.DialogClasses.ChangeNameDialog;
 import com.example.mobilepalengke.DialogClasses.ChangePasswordDialog;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,6 +50,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
     ChangeNameDialog changeNameDialog;
     ChangeEmailAddressDialog changeEmailAddressDialog;
     ChangePasswordDialog changePasswordDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
@@ -53,7 +59,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
 
     boolean isListening = true;
 
-    Query userQuery, rolesQuery;
+    Query userQuery, rolesQuery, appInfoQuery;
 
     String uid, currentPassword;
     User user;
@@ -80,6 +86,8 @@ public class AccountDetailsActivity extends AppCompatActivity {
         changeNameDialog = new ChangeNameDialog(context);
         changeEmailAddressDialog = new ChangeEmailAddressDialog(context);
         changePasswordDialog = new ChangePasswordDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         getSharedPreference();
 
@@ -91,10 +99,12 @@ public class AccountDetailsActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         userQuery = firebaseDatabase.getReference("users").child(uid);
         rolesQuery = firebaseDatabase.getReference("roles");
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         userQuery.addValueEventListener(getUserValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         tvResendLink.setOnClickListener(view -> sendEmailVerificationLink());
 
@@ -272,6 +282,61 @@ public class AccountDetailsActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     int sendEmailTryCount = 0;
 
     private void sendEmailVerificationLink() {
@@ -336,6 +401,7 @@ public class AccountDetailsActivity extends AppCompatActivity {
     public void onResume() {
         isListening = true;
         userQuery.addListenerForSingleValueEvent(getUserValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }

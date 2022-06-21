@@ -15,17 +15,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mobilepalengke.Classes.Credentials;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.Role;
 import com.example.mobilepalengke.DataClasses.Roles;
 import com.example.mobilepalengke.DataClasses.User;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -49,10 +53,16 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
+
+    boolean isListening = true;
+
+    Query appInfoQuery;
 
     int currentStep = 0, maxStep = 3;
 
@@ -100,6 +110,8 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         if (getIntent().getBooleanExtra("isForgotPasswordLinkSent", false)) {
             messageDialog.setTextCaption("The link to reset your password has been sent to your email.");
@@ -127,6 +139,10 @@ public class WelcomeScreenActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
+
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
+
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         etEmail.addTextChangedListener(new TextWatcher() {
             @Override
@@ -735,9 +751,14 @@ public class WelcomeScreenActivity extends AppCompatActivity {
                         if (rolesInCategory.getValue() != null)
                             for (Map.Entry<String, Role> roleInCategory : rolesInCategory.getValue().entrySet())
                                 if (roleInCategory.getValue().isDefaultOnRegister()) {
-                                    String roleIndex = "role" + ((String.valueOf(mapRole.size() + 1).length() < 2)
-                                            ? "0" + (mapRole.size() + 1)
-                                            : (int) (mapRole.size() + 1));
+                                    String roleIndex;
+                                    StringBuilder idBuilder = new StringBuilder("role");
+
+                                    for (int i = 0; i < 7 - String.valueOf(mapRole.size() + 1).length(); i++)
+                                        idBuilder.append("0");
+                                    idBuilder.append(mapRole.size() + 1);
+
+                                    roleIndex = String.valueOf(idBuilder);
 
                                     mapRole.put(roleIndex, roleInCategory.getKey());
                                 }
@@ -764,6 +785,61 @@ public class WelcomeScreenActivity extends AppCompatActivity {
                 messageDialog.showDialog();
 
                 rollbackUser();
+            }
+        };
+    }
+
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
             }
         };
     }
@@ -898,5 +974,27 @@ public class WelcomeScreenActivity extends AppCompatActivity {
             constraintLayout2.setVisibility(View.VISIBLE);
             btnNextLayout.setVisibility(View.VISIBLE);
         }
+    }
+
+    @Override
+    public void onResume() {
+        isListening = true;
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
+
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        isListening = false;
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        isListening = false;
+
+        super.onDestroy();
     }
 }

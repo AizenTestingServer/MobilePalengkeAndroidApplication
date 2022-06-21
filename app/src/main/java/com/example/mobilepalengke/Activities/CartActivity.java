@@ -1,7 +1,9 @@
 package com.example.mobilepalengke.Activities;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,11 +11,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.mobilepalengke.Adapters.CartFragmentAdapter;
+import com.example.mobilepalengke.DataClasses.AppInfo;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.Fragments.CartFragment;
 import com.example.mobilepalengke.Fragments.OrdersFragment;
 import com.example.mobilepalengke.R;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -27,12 +38,19 @@ public class CartActivity extends AppCompatActivity {
 
     Context context;
 
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
+
     FragmentActivity fragmentActivity;
 
     CartFragment cartFragment = new CartFragment();
     OrdersFragment ordersFragment = new OrdersFragment();
 
     CartFragmentAdapter cartFragmentAdapter;
+
+    boolean isListening = true;
+
+    Query appInfoQuery;
 
     int selectedTab;
 
@@ -45,9 +63,19 @@ public class CartActivity extends AppCompatActivity {
         viewPager2 = findViewById(R.id.viewPager2);
 
         fragmentActivity = CartActivity.this;
+
         context = fragmentActivity;
 
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
+
         String productId = getIntent().getStringExtra("productId");
+
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
+
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
+
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         if (fragmentActivity != null) {
             FragmentManager fragmentManager = fragmentActivity.getSupportFragmentManager();
@@ -109,8 +137,85 @@ public class CartActivity extends AppCompatActivity {
         }
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    @Override
+    public void onResume() {
+        isListening = true;
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
+
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        isListening = false;
+
+        super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        isListening = false;
+
+        super.onDestroy();
     }
 }

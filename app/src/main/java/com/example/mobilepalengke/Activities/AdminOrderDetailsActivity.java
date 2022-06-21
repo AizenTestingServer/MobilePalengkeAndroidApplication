@@ -2,6 +2,8 @@ package com.example.mobilepalengke.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,14 +15,17 @@ import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.OrderProductGridAdapter;
 import com.example.mobilepalengke.DataClasses.Address;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.CheckOutProduct;
 import com.example.mobilepalengke.DataClasses.NotificationItem;
 import com.example.mobilepalengke.DataClasses.Order;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DataClasses.User;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.DialogClasses.OrderStatusDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -59,13 +64,15 @@ public class AdminOrderDetailsActivity extends AppCompatActivity {
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
     OrderStatusDialog orderStatusDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
 
     boolean isListening = true;
 
-    Query orderQuery, productsQuery, userQuery, rolesQuery, notificationsQuery, ownerNotificationsQuery;
+    Query orderQuery, productsQuery, userQuery, rolesQuery, notificationsQuery, ownerNotificationsQuery, appInfoQuery;
 
     Order currentOrder;
 
@@ -112,6 +119,8 @@ public class AdminOrderDetailsActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
         orderStatusDialog = new OrderStatusDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -129,6 +138,7 @@ public class AdminOrderDetailsActivity extends AppCompatActivity {
         rolesQuery = firebaseDatabase.getReference();
         notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
         ownerNotificationsQuery = firebaseDatabase.getReference("notifications").child(ownerId);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         if (notificationId != null) {
             isListening = false;
@@ -139,6 +149,7 @@ public class AdminOrderDetailsActivity extends AppCompatActivity {
         loadingDialog.showDialog();
         isListening = true;
         orderQuery.addValueEventListener(getOrderValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         orderProductGridAdapter = new OrderProductGridAdapter(context, checkOutProducts, products);
@@ -232,8 +243,14 @@ public class AdminOrderDetailsActivity extends AppCompatActivity {
     private void sendNotification(String[] notifData) {
         loadingDialog.showDialog();
 
-        String notificationId = "notif" + ((String.valueOf(overallOwnerNotificationCount + 1).length() < 2) ?
-                "0" + (overallOwnerNotificationCount + 1) : (int) (overallOwnerNotificationCount + 1));
+        String notificationId;
+        StringBuilder idBuilder = new StringBuilder("notif");
+
+        for (int i = 0; i < 7 - String.valueOf(overallOwnerNotificationCount + 1).length(); i++)
+            idBuilder.append("0");
+        idBuilder.append(overallOwnerNotificationCount + 1);
+
+        notificationId = String.valueOf(idBuilder);
 
         String notifDescription = notifData[0],
                 notifTitle = "Mobile Palengke Order",
@@ -429,9 +446,65 @@ public class AdminOrderDetailsActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     @Override
     public void onResume() {
         isListening = true;
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }

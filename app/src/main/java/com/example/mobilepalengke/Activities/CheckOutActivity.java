@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
@@ -24,6 +25,7 @@ import android.widget.Toast;
 import com.example.mobilepalengke.Adapters.CheckOutProductAdapter;
 import com.example.mobilepalengke.Adapters.DeliveryAddressAdapter;
 import com.example.mobilepalengke.DataClasses.Address;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.CartProduct;
 import com.example.mobilepalengke.DataClasses.CheckOutProduct;
 import com.example.mobilepalengke.DataClasses.NotificationItem;
@@ -32,9 +34,11 @@ import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DataClasses.User;
 import com.example.mobilepalengke.DialogClasses.AddressDialog;
 import com.example.mobilepalengke.DialogClasses.ChangeEmailAddressDialog;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.DialogClasses.OrderDetailsDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -79,13 +83,15 @@ public class CheckOutActivity extends AppCompatActivity {
     AddressDialog addressDialog;
     ChangeEmailAddressDialog changeEmailAddressDialog;
     OrderDetailsDialog orderDetailsDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
 
     boolean isListening = true;
 
-    Query productsQuery, addressQuery, userQuery, ordersQuery, cartProductsQuery, notificationsQuery;
+    Query productsQuery, addressQuery, userQuery, ordersQuery, cartProductsQuery, notificationsQuery, appInfoQuery;
 
     ArrayList<String> productIdList;
     ArrayList<Integer> quantityList;
@@ -160,6 +166,8 @@ public class CheckOutActivity extends AppCompatActivity {
         addressDialog = new AddressDialog(context);
         changeEmailAddressDialog = new ChangeEmailAddressDialog(context);
         orderDetailsDialog = new OrderDetailsDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         Intent currentIntent = getIntent();
         productIdList = (ArrayList<String>) currentIntent.getSerializableExtra("productIdList");
@@ -193,10 +201,12 @@ public class CheckOutActivity extends AppCompatActivity {
         ordersQuery = firebaseDatabase.getReference("orders");
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid).child("cartProducts");
         notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         productsQuery.addValueEventListener(getProductsValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         firstConstraint.setVisibility(View.VISIBLE);
         footer1Layout.setVisibility(View.GONE);
@@ -311,9 +321,14 @@ public class CheckOutActivity extends AppCompatActivity {
         orderDetailsDialog.setDialogListener(() -> {
             loadingDialog.showDialog();
 
-            String orderId = "order" + ((String.valueOf(overallOrderCount + 1).length() < 2) ?
-                    "0" + (overallOrderCount + 1) :
-                    (int) (overallOrderCount + 1));
+            String orderId;
+            StringBuilder idBuilder = new StringBuilder("order");
+
+            for (int i = 0; i < 7 - String.valueOf(overallOrderCount + 1).length(); i++)
+                idBuilder.append("0");
+            idBuilder.append(overallOrderCount + 1);
+
+            orderId = String.valueOf(idBuilder);
 
             String paymentMethod;
 
@@ -346,8 +361,14 @@ public class CheckOutActivity extends AppCompatActivity {
             Order order = new Order(orderId, uid, paymentMethod, "Processing", curDateAndTime,
                     mapAddress, mobileNumbers, mapProducts);
 
-            String notificationId = "notif" + ((String.valueOf(overallNotificationCount + 1).length() < 2) ?
-                        "0" + (overallNotificationCount + 1) : (int) (overallNotificationCount + 1));
+            String notificationId;
+            idBuilder = new StringBuilder("notif");
+
+            for (int i = 0; i < 7 - String.valueOf(overallNotificationCount + 1).length(); i++)
+                idBuilder.append("0");
+            idBuilder.append(overallNotificationCount + 1);
+
+            notificationId = String.valueOf(idBuilder);
 
             String notifDescription = "Order Placed",
                     notifTitle = "Mobile Palengke Order",
@@ -427,10 +448,14 @@ public class CheckOutActivity extends AppCompatActivity {
             boolean isAddMode = false;
 
             if (addressId == null) {
-                addressId = "add"
-                        + ((String.valueOf(overallAddressCount + 1).length() < 2) ?
-                        "0" + (overallAddressCount + 1) :
-                        (int) (overallAddressCount + 1));
+                StringBuilder idBuilder = new StringBuilder("add");
+
+                for (int i = 0; i < 7 - String.valueOf(overallAddressCount + 1).length(); i++)
+                    idBuilder.append("0");
+                idBuilder.append(overallAddressCount + 1);
+
+                addressId = String.valueOf(idBuilder);
+
                 isAddMode = true;
             }
 
@@ -781,6 +806,61 @@ public class CheckOutActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     private void showNotification(NotificationItem notification, int index) {
         NotificationManager notificationManager = getNotificationManager(notification);
         Bitmap icon = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_head);
@@ -981,6 +1061,7 @@ public class CheckOutActivity extends AppCompatActivity {
     public void onResume() {
         isListening = true;
         productsQuery.addListenerForSingleValueEvent(getProductsValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }

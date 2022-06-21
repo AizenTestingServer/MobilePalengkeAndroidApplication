@@ -3,6 +3,7 @@ package com.example.mobilepalengke.Activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,12 +16,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.mobilepalengke.Adapters.ProductAdapter;
 import com.example.mobilepalengke.Adapters.ProductCategoryButtonAdapter;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.Cart;
 import com.example.mobilepalengke.DataClasses.CartProduct;
 import com.example.mobilepalengke.DataClasses.Product;
 import com.example.mobilepalengke.DataClasses.ProductCategory;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -54,13 +58,15 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
 
     boolean isListening = true;
 
-    Query productQuery, productCategoriesQuery, cartProductsQuery;
+    Query productQuery, productCategoriesQuery, cartProductsQuery, appInfoQuery;
 
     List<ProductCategory> productCategories = new ArrayList<>();
 
@@ -106,6 +112,8 @@ public class ProductDetailsActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -119,10 +127,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
         productQuery = firebaseDatabase.getReference("products").orderByChild("name");
         productCategoriesQuery = firebaseDatabase.getReference("productCategories").orderByChild("name");
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         productQuery.addValueEventListener(getProdValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL,
                 false);
@@ -338,6 +348,61 @@ public class ProductDetailsActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     private void addToCart(Product product, int quantity) {
         loadingDialog.showDialog();
 
@@ -385,6 +450,7 @@ public class ProductDetailsActivity extends AppCompatActivity {
     public void onResume() {
         isListening = true;
         productQuery.addListenerForSingleValueEvent(getProdValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }

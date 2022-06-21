@@ -12,7 +12,7 @@ import com.example.mobilepalengke.R;
 
 import androidx.core.content.ContextCompat;
 
-public class ConfirmationDialog {
+public class StatusDialog {
 
     private TextView messageTextView;
 
@@ -20,7 +20,7 @@ public class ConfirmationDialog {
     private final Activity activity;
     private Dialog dialog;
 
-    public ConfirmationDialog(Context context) {
+    public StatusDialog(Context context) {
         this.context = context;
         activity = (Activity) context;
 
@@ -35,19 +35,16 @@ public class ConfirmationDialog {
     private void setDialog() {
         dialog = new Dialog(context);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_confirmation_layout);
+        dialog.setContentView(R.layout.dialog_status_layout);
         dialog.setCanceledOnTouchOutside(false);
         dialog.setCancelable(false);
 
         messageTextView = dialog.findViewById(R.id.messageTextView);
-        Button btnConfirm = dialog.findViewById(R.id.btnConfirm);
-        Button btnCancel = dialog.findViewById(R.id.btnCancel);
+        Button btnOK = dialog.findViewById(R.id.btnOK);
 
-        btnConfirm.setOnClickListener(view -> {
-            if (dialogListener != null) dialogListener.onConfirm();
+        btnOK.setOnClickListener(view -> {
+            if (dialogListener != null) dialogListener.onOK();
         });
-
-        btnCancel.setOnClickListener(view -> dismissDialog());
     }
 
     private void setDialogWindow() {
@@ -70,7 +67,7 @@ public class ConfirmationDialog {
     DialogListener dialogListener;
 
     public interface DialogListener {
-        void onConfirm();
+        void onOK();
     }
 
     public void setDialogListener(DialogListener dialogListener) {

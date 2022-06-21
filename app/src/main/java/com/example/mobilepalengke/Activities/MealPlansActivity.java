@@ -3,6 +3,7 @@ package com.example.mobilepalengke.Activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,10 +17,13 @@ import android.widget.TextView;
 
 import com.example.mobilepalengke.Adapters.IconOptionAdapter;
 import com.example.mobilepalengke.Adapters.MealPlanAdapter;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.IconOption;
 import com.example.mobilepalengke.DataClasses.MealPlan;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -52,6 +56,8 @@ public class MealPlansActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
@@ -62,7 +68,7 @@ public class MealPlansActivity extends AppCompatActivity {
 
     String searchValue;
 
-    Query mealPlansQuery, mealPlanCategoriesQuery, cartProductsQuery;
+    Query mealPlansQuery, mealPlanCategoriesQuery, cartProductsQuery, appInfoQuery;
 
     List<MealPlan> mealPlans = new ArrayList<>(), mealPlansCopy = new ArrayList<>();
     List<String> mealPlansCategories = new ArrayList<>(), mealPlanCategoriesCopy = new ArrayList<>();
@@ -104,6 +110,8 @@ public class MealPlansActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
@@ -116,10 +124,12 @@ public class MealPlansActivity extends AppCompatActivity {
         mealPlansQuery = firebaseDatabase.getReference("mealPlans").orderByChild("name");
         mealPlanCategoriesQuery = firebaseDatabase.getReference("mealPlanCategories").orderByChild("name");
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         mealPlansQuery.addValueEventListener(getMealPlanValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         mealPlanAdapter = new MealPlanAdapter(context, mealPlans);
@@ -326,6 +336,61 @@ public class MealPlansActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private void filterMealPlans() {
         List<MealPlan> mealPlansTemp = new ArrayList<>(mealPlansCopy);
@@ -379,6 +444,7 @@ public class MealPlansActivity extends AppCompatActivity {
         if (isStopped) {
             isListening = true;
             mealPlansQuery.addListenerForSingleValueEvent(getMealPlanValueListener());
+            appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
             isStopped = false;
         }
 

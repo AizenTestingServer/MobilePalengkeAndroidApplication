@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,9 +17,12 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.NotificationItem;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.Fragments.ChatListFragment;
 import com.example.mobilepalengke.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -55,13 +59,15 @@ public class MainActivity extends AppCompatActivity {
 
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
 
     boolean isListening = true;
 
-    Query cartProductsQuery, notificationsQuery;
+    Query cartProductsQuery, notificationsQuery, appInfoQuery;
 
     String uid, currentPassword;
     int overallCartCount = 0, overallNotificationCount = 0;
@@ -82,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
 
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         if (getIntent().getBooleanExtra("isFromRegistration", false)) {
             messageDialog.setTextCaption("Successfully registered an account.");
@@ -126,10 +134,12 @@ public class MainActivity extends AppCompatActivity {
 
         cartProductsQuery = firebaseDatabase.getReference("cartList").child(uid);
         notificationsQuery = firebaseDatabase.getReference("notifications").child(uid);
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         cartProductsQuery.addValueEventListener(getCartValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         bottomNavigationView.setBackground(null);
         if (navHostFragment != null)
@@ -331,6 +341,61 @@ public class MainActivity extends AppCompatActivity {
         return notificationManager;
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     private void getSharedPreference() {
         SharedPreferences sharedPreferences = getSharedPreferences("signedInData", Context.MODE_PRIVATE);
         currentPassword = sharedPreferences.getString("password", null);
@@ -361,6 +426,7 @@ public class MainActivity extends AppCompatActivity {
     public void onResume() {
         isListening = true;
         cartProductsQuery.addListenerForSingleValueEvent(getCartValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }

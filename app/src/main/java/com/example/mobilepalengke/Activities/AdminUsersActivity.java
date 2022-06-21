@@ -2,6 +2,8 @@ package com.example.mobilepalengke.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -15,15 +17,18 @@ import android.widget.Toast;
 
 import com.example.mobilepalengke.Adapters.IconOptionAdapter;
 import com.example.mobilepalengke.Adapters.UserAdapter;
+import com.example.mobilepalengke.DataClasses.AppInfo;
 import com.example.mobilepalengke.DataClasses.CheckableItem;
 import com.example.mobilepalengke.DataClasses.IconOption;
 import com.example.mobilepalengke.DataClasses.Role;
 import com.example.mobilepalengke.DataClasses.RoleItem;
 import com.example.mobilepalengke.DataClasses.Roles;
 import com.example.mobilepalengke.DataClasses.User;
+import com.example.mobilepalengke.DialogClasses.DownloadDialog;
 import com.example.mobilepalengke.DialogClasses.LoadingDialog;
 import com.example.mobilepalengke.DialogClasses.MessageDialog;
 import com.example.mobilepalengke.DialogClasses.RolesDialog;
+import com.example.mobilepalengke.DialogClasses.StatusDialog;
 import com.example.mobilepalengke.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -56,10 +61,12 @@ public class AdminUsersActivity extends AppCompatActivity {
     LoadingDialog loadingDialog;
     MessageDialog messageDialog;
     RolesDialog rolesDialog;
+    DownloadDialog downloadDialog;
+    StatusDialog statusDialog;
 
     FirebaseDatabase firebaseDatabase;
 
-    Query usersQuery, rolesQuery;
+    Query usersQuery, rolesQuery, appInfoQuery;
 
     String uid;
 
@@ -114,6 +121,8 @@ public class AdminUsersActivity extends AppCompatActivity {
         loadingDialog = new LoadingDialog(context);
         messageDialog = new MessageDialog(context);
         rolesDialog = new RolesDialog(context);
+        downloadDialog = new DownloadDialog(context);
+        statusDialog = new StatusDialog(context);
 
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
@@ -122,10 +131,12 @@ public class AdminUsersActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance(getString(R.string.firebase_RTDB_url));
         usersQuery = firebaseDatabase.getReference("users");
         rolesQuery = firebaseDatabase.getReference();
+        appInfoQuery = firebaseDatabase.getReference("appInfo");
 
         loadingDialog.showDialog();
         isListening = true;
         usersQuery.addValueEventListener(getUsersValueListener());
+        appInfoQuery.addValueEventListener(getAppInfoValueListener());
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false);
         userAdapter = new UserAdapter(context, users, usersRoles);
@@ -363,6 +374,61 @@ public class AdminUsersActivity extends AppCompatActivity {
         };
     }
 
+    private ValueEventListener getAppInfoValueListener() {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (isListening) {
+                    if (snapshot.exists()) {
+                        AppInfo appInfo = snapshot.getValue(AppInfo.class);
+
+                        if (appInfo != null) {
+                            if (appInfo.getStatus().equals("Live") || appInfo.isDeveloper()) {
+                                statusDialog.dismissDialog();
+
+                                if (appInfo.getCurrentVersion() < appInfo.getLatestVersion() && !appInfo.isDeveloper()) {
+                                    downloadDialog.setTextCaption(getString(R.string.newVersionPrompt, appInfo.getLatestVersion()));
+                                    downloadDialog.showDialog();
+
+                                    downloadDialog.setDialogListener(new DownloadDialog.DialogListener() {
+                                        @Override
+                                        public void onDownload() {
+                                            Intent intent = new Intent("android.intent.action.VIEW",
+                                                    Uri.parse(appInfo.getDownloadLink()));
+                                            startActivity(intent);
+
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+
+                                        @Override
+                                        public void onCancel() {
+                                            downloadDialog.dismissDialog();
+                                            finishAffinity();
+                                        }
+                                    });
+                                } else downloadDialog.dismissDialog();
+                            } else {
+                                statusDialog.setTextCaption(getString(R.string.statusPrompt, appInfo.getStatus()));
+                                statusDialog.showDialog();
+
+                                statusDialog.setDialogListener(() -> {
+                                    statusDialog.dismissDialog();
+                                    finishAffinity();
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("TAG: " + context.getClass(), "appInfoQuery:onCancelled", error.toException());
+            }
+        };
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private void filterUserList() {
         List<User> usersTemp = new ArrayList<>(usersCopy);
@@ -417,6 +483,7 @@ public class AdminUsersActivity extends AppCompatActivity {
     public void onResume() {
         isListening = true;
         usersQuery.addListenerForSingleValueEvent(getUsersValueListener());
+        appInfoQuery.addListenerForSingleValueEvent(getAppInfoValueListener());
 
         super.onResume();
     }
